@@ -1,6 +1,6 @@
 # **APEDIA**: **A**ngiosarcoma **P**D-L1 **E**xpression **DIA**gnostics with Deep Learning
 
-APEDIA utilizes deep learning to enhance the decision quality of pathologists in the assessment of PD-L1 expression in angiosarcoma. Given a whole-slide image, it calculates the Tumor Proportion Score, which indicates the percentate of tumor cells which are PD-L1 positive.
+**APEDIA**, **A**ngiosarcoma **P**D-L1 **E**xpression **DIA**gnostics with Deep Learning, aims to enhance the decision quality of pathologists in the assessment of PD-L1 expression in angiosarcoma. Given a whole-slide image, it calculates the Tumor Proportion Score, which indicates the percentate of tumor cells which are PD-L1 positive.
 
 **Note**: This repository is currently under construction. More features and documentation will be added as the project progresses.
 
@@ -36,4 +36,4 @@ TODO
 
 ## License
 
-TODO
+APEDIA is open-sourced under the MIT License. This license enables anyone to freely use, modify, and distribute the project, subject to the conditions outlined in the LICENSE file found in the repository.
