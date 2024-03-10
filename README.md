@@ -32,7 +32,20 @@ The APEDIA project includes a series of scripts designed to preprocess data, tra
 
 ## Getting Started
 
-TODO
+To set up APEDIA for development or usage, follow these steps:
+
+1. **Clone the Repository**
+
+```sh
+git clone https://github.com/Kainmueller-Lab/APEDIA
+cd APEDIA
+```
+
+2. **Install the package**
+
+```
+pip install -e .
+```
 
 ## License
 

@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "APEDIA: Angiosarcoma PD-L1 Expression Diagnostics with Deep Learning"
+version: 0.1.0
+date-released: 2024-03-31
+authors:
+  - family-names: "Reith"
+    given-names: "Fabian"
+    orcid: "https://orcid.org/0000-0002-0745-2726"
