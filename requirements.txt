@@ -1,3 +1,8 @@
 numpy
 pandas
 torch
+tqdm
+segmentation_models_pytorch
+albumentations
+scikit-image
+matplotlib

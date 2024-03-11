@@ -37,3 +37,6 @@ pip-delete-this-directory.txt
 # VSCode
 .vscode/
 *.code-workspace
+
+# Custom folders
+data/
