@@ -97,7 +97,7 @@ def train_tumor_patch_detector(train_tumor_patch_detector_params):
     print(f"Took {passed_time} to train {epochs} epochs with {encoder_name} encoder.")
     
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(description='Train Tumor Patch Detector')
 
     # Mandatory parameters
@@ -134,3 +134,7 @@ if __name__ == '__main__':
     # Call the training function with updated parameters
     print("Training Tumor Patch Detector")
     train_tumor_patch_detector(train_tumor_patch_detector_params)
+
+
+if __name__ == '__main__':
+    main()
