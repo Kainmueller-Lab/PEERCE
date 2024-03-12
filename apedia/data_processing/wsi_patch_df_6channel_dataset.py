@@ -146,7 +146,7 @@ class WSIPatchDfDataset6channel(Dataset):
 
     def __init__(self, patch_df, classes=['non_tumor', 'tumor'], cv_split=0, transform=None, 
                  columns=['path_patch_he', 'path_patch_pdl1'], valid=False, pil_image=False, use_masks=False, mask_col='path_patch_mask',
-                 angio='all'):
+                 angio='all', column_scalar_label='dummy'):
         # options for angio are:
         # 'all' - use all patches (regardless of verified angio status)
         # 'verified' - use only patches with verified angio status
@@ -172,7 +172,10 @@ class WSIPatchDfDataset6channel(Dataset):
             else:
                 self.limited_df = patch_df[(patch_df.cv_split != cv_split) | ~patch_df.verified_angiosarcoma].reset_index(drop=True)
         self.imgs = [self.limited_df[column].values for column in columns]
-        self.targets = self.limited_df.tumors.values
+        if column_scalar_label == 'dummy':
+            self.targets = np.zeros(len(self.limited_df))
+        else:
+            self.targets = self.limited_df[column_scalar_label].values
         self.use_masks = use_masks
         if self.use_masks:
             self.masks = self.limited_df[mask_col].values

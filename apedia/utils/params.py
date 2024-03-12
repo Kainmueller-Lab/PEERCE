@@ -7,8 +7,9 @@ train_cell_type_detection_params = {
 }
 
 train_tumor_patch_detector_params = {
-    "column_name_data": 'pdl1',
-    "column_name_mask": 'mask',
+    "column_path_data": 'pdl1',
+    "column_path_mask": 'mask',
+    "column_scalar_label": 'dummy',
     "lr": 0.001,
     "epochs": 50,
     "bs": 8,

@@ -12,7 +12,7 @@ The APEDIA project includes a series of scripts designed to preprocess data, tra
 
 1. **Tumor Patch Detector Training**
    - **Script Name**: `train_tumor_patch_detector.py`
-   - **Description**: Trains a model to detect tumor patches in WSIs.
+   - **Description**: Trains a model to detect tumor areas in patches. This script can be executed from the terminal. Upon completion, it outputs a dictionary (in pickle format) containing detailed training logs, such as loss and accuracy metrics over epochs. Additionally, the trained model's weights are saved in the specified output directory, facilitating further analysis, evaluation, or deployment.
 
 2. **Cell Type Detector Training**
    - **Script Name**: `train_cell_type_detector.py`

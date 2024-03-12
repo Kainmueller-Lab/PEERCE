@@ -40,3 +40,4 @@ pip-delete-this-directory.txt
 
 # Custom folders
 data/
+.gitignore_jan
