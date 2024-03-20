@@ -1,6 +1,7 @@
 from torchvision import transforms
 import torch
 import numpy as np
+import os
 from torchvision.transforms import ToPILImage
 
 from apedia.data_processing.deepliif_networks import define_G
@@ -38,11 +39,17 @@ def inverse_transform_deepliif(tensor, to_pil=True, to_array=True):
     
     
 class MakeHemaPatch:
-    def __init__(self, path_network_weiths="/home/fabian/projects/phd/deepliif/DeepLIIF/model-server/DeepLIIF_Latest_Model/latest_net_G1.pth"):
+    def __init__(self, path_network_weights=None): # "/home/fabian/projects/phd/deepliif/DeepLIIF/model-server/DeepLIIF_Latest_Model/latest_net_G1.pth"
+        if path_network_weights is None:
+            # Construct the path to the weights directory relative to this file
+            current_dir = os.path.dirname(__file__)
+            path_network_weights = os.path.join(current_dir, '..', '..', 'weights', 'deepliif_latest_net_G1.pth')
+
+        
         hema_generator = define_G(3, 3, 64, 'resnet_9blocks', 'batch', True, 'normal', 0.02, [0], 'zero')
         if isinstance(hema_generator, torch.nn.DataParallel):
             hema_generator = hema_generator.module
-        hema_generator.load_state_dict(torch.load(path_network_weiths))
+        hema_generator.load_state_dict(torch.load(path_network_weights))
         self.hema_generator = hema_generator.cuda()
         
     def __call__(self, img):

@@ -6,5 +6,6 @@ segmentation_models_pytorch
 albumentations
 scikit-image
 matplotlib
-cellpose
+cellpose==2.2
 staintools
+spams

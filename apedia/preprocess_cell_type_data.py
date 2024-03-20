@@ -13,6 +13,7 @@ from apedia.data_processing.instance_segmentation import process_patch, create_s
 from apedia.data_processing.instance_segmentation import string_to_float_coords, get_patch_path_all
 from apedia.data_processing.segmentation_viz import display_segmentation_channels, plot_circles_and_roi_points
 
+
 def preprocess_cell_type_data(out_path, path_df, path_cnn_pred_patches_df, path_roi_csv, first_omero_patches,
                               path_roi_csv_cnn=None, roi_infos=False, tip_the_balance=0):
     """
@@ -28,6 +29,7 @@ def preprocess_cell_type_data(out_path, path_df, path_cnn_pred_patches_df, path_
     
     # Load data frames
     df = pd.read_feather(path_df)
+    df['pdl1_patch_names'] = [Path(p).name for p in df.path_patch_pdl1]
     cnn_patch_df = pd.read_feather(path_cnn_pred_patches_df)
     roi_df = pd.read_csv(path_roi_csv)
     if path_roi_csv_cnn:
@@ -45,6 +47,7 @@ def preprocess_cell_type_data(out_path, path_df, path_cnn_pred_patches_df, path_
     out_path_viz.mkdir(parents=True, exist_ok=True)
     out_path_calculation.mkdir(parents=True, exist_ok=True)
     
+
     # Load and configure the Cellpose model
     model = models.Cellpose(gpu=True, model_type='nuclei')
     
@@ -85,25 +88,34 @@ def preprocess_cell_type_data(out_path, path_df, path_cnn_pred_patches_df, path_
         display_segmentation_channels(segmentation_channels, image_name, save_path=out_path_viz)
         plot_circles_and_roi_points(outlines_list, results_df, patch, save_path=out_path_viz / f"{Path(image_name).stem}.png")
 
-# Example call to the function
 
-path_other_patches = Path("/home/fabian/projects/phd/ssd_data/first_patches_omero_upload")
-first_omero_patches = list(path_other_patches.rglob("*.png"))
-first_omero_patches = [p for p in first_omero_patches if re.match(r".*W\d+.*PD-L1.*.png", p.name)]
+if __name__ == "__main__":
+    # Example call to the function
+    path_other_patches = Path("/home/fabian/projects/phd/ssd_data/first_patches_omero_upload")
+    path_roi_csv = Path('/home/fabian/projects/phd/angiosarkom_pdl1_prediction') / 'data' / 'cell_segmentation_first_go_full_Batch_ROI_Export_19sep23.csv'
+    path_roi_csv_cnn = Path('/home/fabian/projects/phd/angiosarkom_pdl1_prediction') / 'data' / 'cell_segmentation_tumor_patches_CNN_prediction_full_Batch_ROI_Export_19sep23.csv'
+    path_df = Path('/home/fabian/projects/phd/angiosarkom_pdl1_prediction') / 'data' / "pdl1_he_mask_patches_6mar23_tumor_non_tumor_cv_splits.feather"
+    path_df = Path('/home/fabian/projects/phd/APEDIA/data/example_cell_type_preprocess_path_df.feather')
+    path_cnn_pred_patches_df = Path('/home/fabian/projects/phd/ssd_data/predictd_patches_15may23/extracted_patches_df.feather')
 
-hema_tip_the_balance = np.Inf
-original_tip_the_balance = -np.Inf
-fair_balance = 0
+    first_omero_patches = list(path_other_patches.rglob("*.png"))
+    first_omero_patches = [p for p in first_omero_patches if re.match(r".*W\d+.*PD-L1.*.png", p.name)]
+    out_path = '/home/fabian/projects/phd/APEDIA/data/outputs/cell_type_preprocessing'
 
-tip_the_balance = fair_balance
+    hema_tip_the_balance = np.Inf
+    original_tip_the_balance = -np.Inf
+    fair_balance = 0
+
+    tip_the_balance = fair_balance
 
 
-preprocess_cell_type_data(
-    out_path="/path/to/output",
-    path_df="/path/to/main_dataframe.feather",
-    path_cnn_pred_patches_df="/path/to/cnn_predictions.feather",
-    path_roi_csv="/path/to/roi_info.csv",
-    path_roi_csv_cnn="/path/to/additional_roi_info.csv",
-    first_omero_patches=first_omero_patches,
-    tip_the_balance=tip_the_balance,
-)
+    preprocess_cell_type_data(
+        out_path=out_path,
+        path_df=path_df,
+        path_cnn_pred_patches_df=path_cnn_pred_patches_df,
+        path_roi_csv=path_roi_csv,
+        path_roi_csv_cnn=path_roi_csv_cnn,
+        first_omero_patches=first_omero_patches,
+        roi_infos=True,
+        tip_the_balance=tip_the_balance,
+    )
