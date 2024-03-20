@@ -10,12 +10,12 @@ import re
 from apedia.data_processing.roi_infos import print_roi_infos
 from apedia.data_processing.deepliif_hema_patch import MakeHemaPatch
 from apedia.data_processing.instance_segmentation import process_patch, create_segmentation_channels
-from apedia.data_processing.instance_segmentation import string_to_float_coords, get_patch_path_all
+from apedia.data_processing.instance_segmentation import string_to_float_coords #, get_patch_path_all
 from apedia.data_processing.segmentation_viz import display_segmentation_channels, plot_circles_and_roi_points
 
 
-def preprocess_cell_type_data(out_path, path_df, path_cnn_pred_patches_df, path_roi_csv, first_omero_patches,
-                              path_roi_csv_cnn=None, roi_infos=False, tip_the_balance=0):
+def preprocess_cell_type_data(out_path, path_folder_patch_imgs, path_roi_csv,
+                              path_roi_csv_2=None, roi_infos=True, tip_the_balance=0):
     """
     Preprocess cell type data using Cellpose models.
 
@@ -28,14 +28,11 @@ def preprocess_cell_type_data(out_path, path_df, path_cnn_pred_patches_df, path_
     """
     
     # Load data frames
-    df = pd.read_feather(path_df)
-    df['pdl1_patch_names'] = [Path(p).name for p in df.path_patch_pdl1]
-    cnn_patch_df = pd.read_feather(path_cnn_pred_patches_df)
     roi_df = pd.read_csv(path_roi_csv)
-    if path_roi_csv_cnn:
-        cnn_roi_df = pd.read_csv(path_roi_csv_cnn)
+    if path_roi_csv_2:
+        roi_df_2 = pd.read_csv(path_roi_csv_2)
         # Combine ROI DataFrames if necessary
-        roi_df = pd.concat([roi_df, cnn_roi_df], ignore_index=True)
+        roi_df = pd.concat([roi_df, roi_df_2], ignore_index=True)
     
     
     if roi_infos:
@@ -56,7 +53,12 @@ def preprocess_cell_type_data(out_path, path_df, path_cnn_pred_patches_df, path_
     # Process each image in the ROI DataFrame
     for idx, image_name in enumerate(tqdm(roi_df['image_name'].unique())):
         # Get the patch path and load the patch
-        path_patch = get_patch_path_all(image_name, df, first_omero_patches, cnn_patch_df)
+        # path_patch = get_patch_path_all(image_name, df, first_omero_patches, cnn_patch_df)
+        path_patch = path_folder_patch_imgs / image_name
+        if not path_patch.is_file():
+            print(f"Patch {path_patch} does not exist.")
+            continue
+        
         copy2(path_patch, out_path_calculation)
         patch = staintools.read_image(str(path_patch))
         roi_coord_list = [string_to_float_coords(i) for i in roi_df[roi_df.image_name == image_name].Points if not pd.isna(i)]
@@ -101,6 +103,8 @@ if __name__ == "__main__":
     first_omero_patches = list(path_other_patches.rglob("*.png"))
     first_omero_patches = [p for p in first_omero_patches if re.match(r".*W\d+.*PD-L1.*.png", p.name)]
     out_path = '/home/fabian/projects/phd/APEDIA/data/outputs/cell_type_preprocessing'
+    seg_patch_folder = Path("/home/fabian/projects/phd/APEDIA/data/example_seg_patches/")
+
 
     hema_tip_the_balance = np.Inf
     original_tip_the_balance = -np.Inf
@@ -111,11 +115,8 @@ if __name__ == "__main__":
 
     preprocess_cell_type_data(
         out_path=out_path,
-        path_df=path_df,
-        path_cnn_pred_patches_df=path_cnn_pred_patches_df,
+        path_folder_patch_imgs=seg_patch_folder,
         path_roi_csv=path_roi_csv,
-        path_roi_csv_cnn=path_roi_csv_cnn,
-        first_omero_patches=first_omero_patches,
         roi_infos=True,
         tip_the_balance=tip_the_balance,
     )
