@@ -36,19 +36,19 @@ class SegmentationDfDataset(Dataset):
         
         if angio == 'all':
             if valid:
-                self.limited_df = patch_df[patch_df.cv == cv_split].reset_index(drop=True)
+                self.limited_df = patch_df[patch_df.cv_split == cv_split].reset_index(drop=True)
             else:
-                self.limited_df = patch_df[patch_df.cv != cv_split].reset_index(drop=True)
+                self.limited_df = patch_df[patch_df.cv_split != cv_split].reset_index(drop=True)
         elif angio == 'verified':
             if valid:
-                self.limited_df = patch_df[(patch_df.cv == cv_split) & patch_df.verified_angiosarcoma].reset_index(drop=True)
+                self.limited_df = patch_df[(patch_df.cv_split == cv_split) & patch_df.verified_angiosarcoma].reset_index(drop=True)
             else:
-                self.limited_df = patch_df[(patch_df.cv != cv_split) & patch_df.verified_angiosarcoma].reset_index(drop=True)
+                self.limited_df = patch_df[(patch_df.cv_split != cv_split) & patch_df.verified_angiosarcoma].reset_index(drop=True)
         elif angio == 'train_all_valid_verified':
             if valid:
-                self.limited_df = patch_df[(patch_df.cv == cv_split) & patch_df.verified_angiosarcoma].reset_index(drop=True)
+                self.limited_df = patch_df[(patch_df.cv_split == cv_split) & patch_df.verified_angiosarcoma].reset_index(drop=True)
             else:
-                self.limited_df = patch_df[(patch_df.cv != cv_split) | ~patch_df.verified_angiosarcoma].reset_index(drop=True)
+                self.limited_df = patch_df[(patch_df.cv_split != cv_split) | ~patch_df.verified_angiosarcoma].reset_index(drop=True)
         
         self.masks = self.limited_df[mask_col].values
         self.patches = self.limited_df[patch_col].values
@@ -194,7 +194,7 @@ def print_metrics_info(metrics_list):
     print("-------------------")
     for key, values in metrics_list.items():
         # Skip 'predictions' and 'ground_truths' and cell_avg_preds since they aren't accuracy metrics
-        if key in ['predictions', 'ground_truths', 'cell_avg_preds']:
+        if key in ['predictions', 'ground_truths', 'cell_avg_preds', 'intersections', 'label_sections', 'pred_section1s', 'pred_section2s', 'pred_section3s']:
             continue
 
         num_correct = int(np.sum(values))
@@ -213,7 +213,8 @@ def validate_unet_cell_segmentation(model, testloader, criterion, device='cuda',
     counter = 0
 
     # Initialize the overall metrics list with the correct keys
-    metrics_list = {'background': [], 'tz_pos': [], 'tz_neg': [], 'other_cells': [], 'predictions': [], 'ground_truths': [], 'cell_avg_preds': []}
+    metrics_list = {'background': [], 'tz_pos': [], 'tz_neg': [], 'other_cells': [], 'predictions': [], 'ground_truths': [], 'cell_avg_preds': [],
+                    'intersections': [], 'label_sections': [], 'pred_section1s': [], 'pred_section2s': [], 'pred_section3s': []}
 
     with torch.no_grad():
         for i, data in tqdm(enumerate(testloader), total=len(testloader), disable=disable_tqdm):
@@ -252,7 +253,9 @@ def train_unet_cell_segmentation(model, trainloader, valid_loader, optimizer, cr
     if loss_acc_dict is None:
         loss_acc_dict = {'iters': [],'train_loss': [], 'valid_loss': [], 'train_acc': [], 'epoch_loss': [], 'epoch_acc': [], 
                          'valid_acc_background': [], 'valid_acc_tz_pos': [], 'valid_acc_tz_neg': [], 'valid_acc_other_cells': [], 
-                         'valid_acc_predictions': [], 'valid_acc_ground_truths': [], 'valid_acc_cell_avg_preds': []}
+                         'valid_acc_predictions': [], 'valid_acc_ground_truths': [], 'valid_acc_cell_avg_preds': [],
+                         'valid_acc_intersections': [], 'valid_acc_label_sections': [], 'valid_acc_pred_section1s': [],
+                         'valid_acc_pred_section2s': [], 'valid_acc_pred_section3s': []}
     model.train()
     print('Training')
     train_running_loss = 0.0

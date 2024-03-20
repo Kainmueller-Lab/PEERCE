@@ -144,7 +144,8 @@ def get_description_string(inst_seg, model_out):
 
     fstr_list = ["Accuracies for labeled cell instances:"]
     for k, v in acc_dict.items():
-        if k == 'background':
+        if k in ['background', 'intersections', 'label_sections', 'pred_section1s', 'pred_section2s', 'pred_section3s',
+                 'predictions', 'ground_truths', 'cell_avg_preds']:
             continue
         if len(v) > 0:
             fstr = f"{k}: {np.mean(v):.2%}"
