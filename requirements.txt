@@ -6,3 +6,5 @@ segmentation_models_pytorch
 albumentations
 scikit-image
 matplotlib
+cellpose
+staintools
