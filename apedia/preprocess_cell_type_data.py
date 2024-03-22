@@ -5,7 +5,7 @@ import staintools
 from tqdm import tqdm
 import numpy as np
 from shutil import copy2
-import re
+# import re
 
 from apedia.data_processing.roi_infos import print_roi_infos
 from apedia.data_processing.deepliif_hema_patch import MakeHemaPatch
@@ -15,7 +15,7 @@ from apedia.data_processing.segmentation_viz import display_segmentation_channel
 
 
 def preprocess_cell_type_data(out_path, path_folder_patch_imgs, path_roi_csv,
-                              path_roi_csv_2=None, roi_infos=True, tip_the_balance=0):
+                              path_roi_csv_2=None, roi_infos=True, tip_the_balance=0, replacements=None):
     """
     Preprocess cell type data using Cellpose models.
 
@@ -34,6 +34,9 @@ def preprocess_cell_type_data(out_path, path_folder_patch_imgs, path_roi_csv,
         # Combine ROI DataFrames if necessary
         roi_df = pd.concat([roi_df, roi_df_2], ignore_index=True)
     
+    if replacements is not None:
+        # Update the dataframe using the replacements dictionary
+        roi_df['cell_texts'] = roi_df.text.replace(replacements)
     
     if roi_infos:
         print_roi_infos(roi_df)
@@ -93,15 +96,15 @@ def preprocess_cell_type_data(out_path, path_folder_patch_imgs, path_roi_csv,
 
 if __name__ == "__main__":
     # Example call to the function
-    path_other_patches = Path("/home/fabian/projects/phd/ssd_data/first_patches_omero_upload")
+    # path_other_patches = Path("/home/fabian/projects/phd/ssd_data/first_patches_omero_upload")
     path_roi_csv = Path('/home/fabian/projects/phd/angiosarkom_pdl1_prediction') / 'data' / 'cell_segmentation_first_go_full_Batch_ROI_Export_19sep23.csv'
-    path_roi_csv_cnn = Path('/home/fabian/projects/phd/angiosarkom_pdl1_prediction') / 'data' / 'cell_segmentation_tumor_patches_CNN_prediction_full_Batch_ROI_Export_19sep23.csv'
-    path_df = Path('/home/fabian/projects/phd/angiosarkom_pdl1_prediction') / 'data' / "pdl1_he_mask_patches_6mar23_tumor_non_tumor_cv_splits.feather"
-    path_df = Path('/home/fabian/projects/phd/APEDIA/data/example_cell_type_preprocess_path_df.feather')
-    path_cnn_pred_patches_df = Path('/home/fabian/projects/phd/ssd_data/predictd_patches_15may23/extracted_patches_df.feather')
+    # path_roi_csv_cnn = Path('/home/fabian/projects/phd/angiosarkom_pdl1_prediction') / 'data' / 'cell_segmentation_tumor_patches_CNN_prediction_full_Batch_ROI_Export_19sep23.csv'
+    # path_df = Path('/home/fabian/projects/phd/angiosarkom_pdl1_prediction') / 'data' / "pdl1_he_mask_patches_6mar23_tumor_non_tumor_cv_splits.feather"
+    # path_df = Path('/home/fabian/projects/phd/APEDIA/data/example_cell_type_preprocess_path_df.feather')
+    # path_cnn_pred_patches_df = Path('/home/fabian/projects/phd/ssd_data/predictd_patches_15may23/extracted_patches_df.feather')
 
-    first_omero_patches = list(path_other_patches.rglob("*.png"))
-    first_omero_patches = [p for p in first_omero_patches if re.match(r".*W\d+.*PD-L1.*.png", p.name)]
+    # first_omero_patches = list(path_other_patches.rglob("*.png"))
+    # first_omero_patches = [p for p in first_omero_patches if re.match(r".*W\d+.*PD-L1.*.png", p.name)]
     out_path = '/home/fabian/projects/phd/APEDIA/data/outputs/cell_type_preprocessing'
     seg_patch_folder = Path("/home/fabian/projects/phd/APEDIA/data/example_seg_patches/")
 
@@ -112,6 +115,24 @@ if __name__ == "__main__":
 
     tip_the_balance = fair_balance
 
+    replacements = {
+    'TZ neg.': 'tz_neg',
+    'TZ neg': 'tz_neg',
+    'TZ pos.': 'tz_pos',
+    'TZ pos': 'tz_pos',
+    'TZ Pos': 'tz_pos',
+    'Neutrophiler Granulozyt': 'other',
+    'Keine TZ': 'other',
+    'Kein TZ': 'other',
+    'Tumorzelle': 'exclude',
+    'Eisenpigment': 'exclude'
+}
+
+    #19sep23 - updated annotations
+
+    replacements['KeineTZ'] = 'other',
+    # unknown what's right
+    replacements['Keine TZ pos'] = 'other'
 
     preprocess_cell_type_data(
         out_path=out_path,
@@ -119,4 +140,5 @@ if __name__ == "__main__":
         path_roi_csv=path_roi_csv,
         roi_infos=True,
         tip_the_balance=tip_the_balance,
+        replacements=replacements
     )
