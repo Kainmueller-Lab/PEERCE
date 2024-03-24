@@ -4,6 +4,7 @@ from pathlib import Path
 import staintools
 from tqdm import tqdm
 import numpy as np
+import datetime
 from shutil import copy2
 # import re
 
@@ -12,6 +13,7 @@ from apedia.data_processing.deepliif_hema_patch import MakeHemaPatch
 from apedia.data_processing.instance_segmentation import process_patch, create_segmentation_channels
 from apedia.data_processing.instance_segmentation import string_to_float_coords #, get_patch_path_all
 from apedia.data_processing.segmentation_viz import display_segmentation_channels, plot_circles_and_roi_points
+from apedia.utils.params import preprocess_cell_type_data_replacement_params
 
 
 def preprocess_cell_type_data(out_path, path_folder_patch_imgs, path_roi_csv,
@@ -41,6 +43,9 @@ def preprocess_cell_type_data(out_path, path_folder_patch_imgs, path_roi_csv,
     if roi_infos:
         print_roi_infos(roi_df)
     # Prepare output directories
+    # add a date string to the output path
+    current_date_string = datetime.datetime.now().strftime('%d%b%y').lower()
+    out_path = str(out_path) + f"_{current_date_string}"
     out_path = Path(out_path)
     out_path_viz = out_path / 'viz'
     out_path_calculation = out_path / 'calculation'
@@ -115,30 +120,11 @@ if __name__ == "__main__":
 
     tip_the_balance = fair_balance
 
-    replacements = {
-    'TZ neg.': 'tz_neg',
-    'TZ neg': 'tz_neg',
-    'TZ pos.': 'tz_pos',
-    'TZ pos': 'tz_pos',
-    'TZ Pos': 'tz_pos',
-    'Neutrophiler Granulozyt': 'other',
-    'Keine TZ': 'other',
-    'Kein TZ': 'other',
-    'Tumorzelle': 'exclude',
-    'Eisenpigment': 'exclude'
-}
-
-    #19sep23 - updated annotations
-
-    replacements['KeineTZ'] = 'other',
-    # unknown what's right
-    replacements['Keine TZ pos'] = 'other'
-
     preprocess_cell_type_data(
         out_path=out_path,
         path_folder_patch_imgs=seg_patch_folder,
         path_roi_csv=path_roi_csv,
         roi_infos=True,
         tip_the_balance=tip_the_balance,
-        replacements=replacements
+        replacements=preprocess_cell_type_data_replacement_params
     )

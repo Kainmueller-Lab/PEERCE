@@ -2,6 +2,23 @@ preprocess_cell_type_data_params = {
     
 }
 
+preprocess_cell_type_data_replacement_params = {
+    'TZ neg.': 'tz_neg',
+    'TZ neg': 'tz_neg',
+    'TZ pos.': 'tz_pos',
+    'TZ pos': 'tz_pos',
+    'TZ Pos': 'tz_pos',
+    'Neutrophiler Granulozyt': 'other',
+    'Keine TZ': 'other',
+    'Kein TZ': 'other',
+    'Tumorzelle': 'exclude',
+    'Eisenpigment': 'exclude',
+    #19sep23 - updated annotations
+    'KeineTZ': 'other',
+    # unknown what's right
+    'Keine TZ pos': 'other',
+}
+
 train_cell_type_detection_params = {
     "cv_split": 0,
     "mask_col": 'path_seg_one_match',
@@ -23,6 +40,8 @@ train_cell_type_detection_params = {
     "disable_tqdm": False,
     "class_weights": [0.0001, 1, 1, 1]
 }
+
+
 
 train_tumor_patch_detector_params = {
     "column_path_data": 'pdl1',
