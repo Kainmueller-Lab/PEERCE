@@ -1,9 +1,14 @@
+from shutil import copy2
 import numpy as np
 from scipy.ndimage import binary_fill_holes
 import pandas as pd
 from pathlib import Path
 from skimage import draw
 from cellpose import utils as cp_utils
+from tqdm import tqdm
+import staintools
+
+from apedia.data_processing.segmentation_viz import display_segmentation_channels, plot_circles_and_roi_points
 
 
 
@@ -105,7 +110,7 @@ def get_corresponding_text(roi_df, tuple_roi_coords, image_name=None, replacemen
     return corresponding_text
 
 
-def create_results_df(roi_df, outlines_list, roi_coord_list, image_name):
+def create_results_df(roi_df, outlines_list, roi_coord_list, image_name, replacements=None):
     # Create an array to store filled circles
     filled_circles = np.zeros((len(outlines_list), 512, 512), dtype=bool)
 
@@ -126,7 +131,7 @@ def create_results_df(roi_df, outlines_list, roi_coord_list, image_name):
     results_df = pd.DataFrame(columns=['image_name', 'label', 'match_found', 'matched_outlines', 'exactly_one_match', 'idx', 'roi_coords'])
 
     # image_name = roi_df.image_name.unique()[0]
-    corresponding_text = get_corresponding_text(roi_df, tuple_roi_coords, image_name)
+    corresponding_text = get_corresponding_text(roi_df, tuple_roi_coords, image_name, replacements=replacements)
 
     # Iterate through each list of test_roi_coords
     for i, (roi_coords, label) in enumerate(zip(tuple_roi_coords, corresponding_text)):
@@ -203,12 +208,47 @@ def create_segmentation_channels(outlines_list, results_df, include_multiple_mat
     return segmentation_channels
 
  
-def process_patch(patch, roi_df, roi_coord_list, image_name, model):
+def process_patch(patch, roi_df, roi_coord_list, image_name, model, replacements=None):
     masks, flows, styles, diams = model.eval(patch, diameter=15, channels=[0,3], invert=True, augment=True, net_avg=True,
                                             flow_threshold=0.4)
 
     outlines_list = cp_utils.outlines_list(masks)
     # outlines = utils.masks_to_outlines(masks)
 
-    results_df = create_results_df(roi_df, outlines_list, roi_coord_list, image_name)
+    results_df = create_results_df(roi_df, outlines_list, roi_coord_list, image_name, replacements=replacements)
     return results_df, outlines_list
+
+def create_cellpose_instance_segmentations_add_rois(path_folder_patch_imgs, out_path_calculation, out_path_viz, roi_df, model, make_hema, viz, tip_the_balance, replacements=None):
+    for idx, image_name in enumerate(tqdm(roi_df['image_name'].unique())):
+        if idx < 18:
+            continue
+        # only to 20 patches for testing
+        if idx > 20:
+            break
+        path_patch = path_folder_patch_imgs / image_name
+        if not path_patch.is_file():
+            print(f"Patch {path_patch} does not exist.")
+            continue
+        
+        copy2(path_patch, out_path_calculation)
+        patch = staintools.read_image(str(path_patch))
+        roi_coord_list = [string_to_float_coords(i) for i in roi_df[roi_df.image_name == image_name].Points if not pd.isna(i)]
+        
+        results_df_patch, outlines_list_patch = process_patch(patch, roi_df, roi_coord_list, image_name, model, replacements=replacements)
+        results_df_hema, outlines_list_hema = process_patch(make_hema(patch), roi_df, roi_coord_list, image_name, model)
+        
+        if results_df_patch['match_found'].sum() >= results_df_hema['match_found'].sum() + tip_the_balance:
+            results_df, outlines_list = results_df_patch, outlines_list_patch
+        else:
+            results_df, outlines_list = results_df_hema, outlines_list_hema
+
+        segmentation_channels = create_segmentation_channels(outlines_list, results_df, include_multiple_matches=False)
+        segmentation_channels_multi = create_segmentation_channels(outlines_list, results_df, include_multiple_matches=True)
+        
+        np.save(out_path_calculation / f"{Path(image_name).stem}_segmentation_channels.npy", segmentation_channels)
+        np.save(out_path_calculation / f"{Path(image_name).stem}_segmentation_channels_multi.npy", segmentation_channels_multi)
+        results_df.to_pickle(out_path_calculation / f"{Path(image_name).stem}_results_df.pckl")
+        
+        if viz:
+            display_segmentation_channels(segmentation_channels, image_name, save_path=out_path_viz)
+            plot_circles_and_roi_points(outlines_list, results_df, patch, save_path=out_path_viz / f"{Path(image_name).stem}.png")

@@ -1,34 +1,47 @@
-from cellpose import models
-import pandas as pd
-from pathlib import Path
-import staintools
-from tqdm import tqdm
-import numpy as np
+import argparse
 import datetime
-from shutil import copy2
-# import re
+import pickle
+from pathlib import Path
 
-from apedia.data_processing.roi_infos import print_roi_infos
+import pandas as pd
+from cellpose import models
+
 from apedia.data_processing.deepliif_hema_patch import MakeHemaPatch
-from apedia.data_processing.instance_segmentation import process_patch, create_segmentation_channels
-from apedia.data_processing.instance_segmentation import string_to_float_coords #, get_patch_path_all
-from apedia.data_processing.segmentation_viz import display_segmentation_channels, plot_circles_and_roi_points
-from apedia.utils.params import preprocess_cell_type_data_replacement_params
+from apedia.data_processing.generate_segmentation_map import create_segmentation_df, create_unet_segmentation_array
+from apedia.data_processing.instance_segmentation import create_cellpose_instance_segmentations_add_rois
+from apedia.data_processing.roi_infos import print_roi_infos
+
+from apedia.utils.params import preprocess_cell_type_data_params
 
 
-def preprocess_cell_type_data(out_path, path_folder_patch_imgs, path_roi_csv,
-                              path_roi_csv_2=None, roi_infos=True, tip_the_balance=0, replacements=None):
+def preprocess_cell_type_data(output_dir, path_folder_patch_imgs, path_roi_csv,
+                              path_roi_csv_2=None, no_roi_infos=False, tip_the_balance=0, replacements=None,
+                              path_deepliif_hema_gan_weights=None, viz=False):
     """
     Preprocess cell type data using Cellpose models.
 
     Parameters:
     - out_path: Directory where output files will be saved.
-    - path_df: Path to the main DataFrame containing patch information.
-    - path_cnn_pred_patches_df: Path to the DataFrame containing CNN prediction patches.
+    - path_folder_patch_imgs: Path to the folder containing patch images.
     - path_roi_csv: Path to the CSV file containing ROI information.
-    - path_roi_csv_cnn: Optional. Path to the CSV file containing additional ROI information from CNN predictions.
+    - path_roi_csv_2: Optional. Path to an additional CSV file containing ROI information.
+    - no_roi_infos: Whether to print ROI information. Default is False.
+    - tip_the_balance: Balance tipping value for comparison logic between original and Hema patches. Default is 0.
+                        If the number of matches in the original patch is greater than the number of matches in the Hema patch plus this value,
+                        the original patch is used.
+    - replacements: Path to a pickle file containing the replacements dictionary or the dictionary itself. Default is None.
+    - path_deepliif_hema_gan_weights: Path to the deepliif hema GAN weights. Default is None.
+    - viz: Enable visualization of segmentation channels and ROI points. Default is False.
     """
-    
+    # Convert paths to Path objects
+    output_dir = Path(output_dir)
+    path_folder_patch_imgs = Path(path_folder_patch_imgs)
+    path_roi_csv = Path(path_roi_csv)
+    if path_roi_csv_2:
+        path_roi_csv_2 = Path(path_roi_csv_2)
+    if path_deepliif_hema_gan_weights:
+        path_deepliif_hema_gan_weights = Path(path_deepliif_hema_gan_weights)
+
     # Load data frames
     roi_df = pd.read_csv(path_roi_csv)
     if path_roi_csv_2:
@@ -36,95 +49,103 @@ def preprocess_cell_type_data(out_path, path_folder_patch_imgs, path_roi_csv,
         # Combine ROI DataFrames if necessary
         roi_df = pd.concat([roi_df, roi_df_2], ignore_index=True)
     
+    # remove nan text ROIs
+    roi_df = roi_df[~roi_df.text.isna()].copy()
     if replacements is not None:
         # Update the dataframe using the replacements dictionary
         roi_df['cell_texts'] = roi_df.text.replace(replacements)
     
-    if roi_infos:
+    if not no_roi_infos:
         print_roi_infos(roi_df)
+
     # Prepare output directories
     # add a date string to the output path
     current_date_string = datetime.datetime.now().strftime('%d%b%y').lower()
-    out_path = str(out_path) + f"_{current_date_string}"
-    out_path = Path(out_path)
-    out_path_viz = out_path / 'viz'
-    out_path_calculation = out_path / 'calculation'
-    out_path_viz.mkdir(parents=True, exist_ok=True)
+    output_dir = str(output_dir) + f"_{current_date_string}"
+    output_dir = Path(output_dir)
+    out_path_calculation = output_dir / 'calculation'
     out_path_calculation.mkdir(parents=True, exist_ok=True)
     
+    out_path_viz = output_dir / 'viz'
+    if viz:
+        out_path_viz.mkdir(parents=True, exist_ok=True)
 
     # Load and configure the Cellpose model
     model = models.Cellpose(gpu=True, model_type='nuclei')
+    # Load MakeHemaPatch
+    make_hema = MakeHemaPatch(path_network_weights=path_deepliif_hema_gan_weights)
+    # Process images
+    create_cellpose_instance_segmentations_add_rois(path_folder_patch_imgs, out_path_calculation, out_path_viz, roi_df, model, make_hema, viz, tip_the_balance,
+                                                    replacements=replacements)
+
+    # Next, create the segmentation df used to train cell segmentation, as well as the segmentation arrays
+    df = create_segmentation_df(out_path_calculation)
+
     
-    # also load make_hema
-    make_hema = MakeHemaPatch()
-    # Process each image in the ROI DataFrame
-    for idx, image_name in enumerate(tqdm(roi_df['image_name'].unique())):
-        # Get the patch path and load the patch
-        # path_patch = get_patch_path_all(image_name, df, first_omero_patches, cnn_patch_df)
-        path_patch = path_folder_patch_imgs / image_name
-        if not path_patch.is_file():
-            print(f"Patch {path_patch} does not exist.")
-            continue
+    # create the segmentation arrays
+    seg_arrays = []
+    seg_arrays_multi = []
+    print("Creating segmentation arrays")
+    for idx, row in df.iterrows():
+        seg_array = create_unet_segmentation_array(row['path_exact_one_match'], out_path_calculation)
+        seg_arrays.append(seg_array)
+        seg_array_multi = create_unet_segmentation_array(row['path_oneplus_matches'], out_path_calculation)
+        seg_arrays_multi.append(seg_array_multi)
         
-        copy2(path_patch, out_path_calculation)
-        patch = staintools.read_image(str(path_patch))
-        roi_coord_list = [string_to_float_coords(i) for i in roi_df[roi_df.image_name == image_name].Points if not pd.isna(i)]
-        
-        results_df_patch, outlines_list_patch = process_patch(patch, roi_df, roi_coord_list, image_name, model)
-        results_df_hema, outlines_list_hema = process_patch(make_hema(patch), roi_df, roi_coord_list, image_name, model)
-        
-        # Comparison logic
-        if results_df_patch['match_found'].sum() >= results_df_hema['match_found'].sum() + tip_the_balance:
-            results_df, outlines_list = results_df_patch, outlines_list_patch
-            print("Best results are from the original patch", f"Out of {len(results_df)} ROIs, {results_df['match_found'].sum()}",
-                  f"ROIs found at least one cell nucleus (vs {results_df_hema['match_found'].sum()} ROIs).")
-            print("Best results are from the original patch", f"Out of {len(results_df)} ROIs, {results_df['exactly_one_match'].sum()}",
-                  f"ROIs found exactly one cell nucleus (vs {results_df_hema['exactly_one_match'].sum()} ROIs).")
-        else:
-            results_df, outlines_list = results_df_hema, outlines_list_hema
-            print("Best results are from the Hema patch", f"Out of {len(results_df)} ROIs, {results_df['match_found'].sum()} ROIs found at least one cell nucleus (vs {results_df_patch['match_found'].sum()} ROIs).")
-            print("Best results are from the Hema patch.", f"Out of {len(results_df)} ROIs, {results_df['exactly_one_match'].sum()} ROIs found exactly one cell nucleus (vs {results_df_patch['exactly_one_match'].sum()} ROIs).")
+    # add the paths of the segmentation arrays to the dataframe
+    df = df.assign(path_seg_one_match=seg_arrays, path_seg_array_oneplus_matches=seg_arrays_multi)
+    
+    # save df
+    df_out_path = output_dir / f'{current_date_string}_hema_patch_if_more_matches_updated_roi_df.feather'
+    print(f"Saving DataFrame to {df_out_path}")
+    df.to_feather(df_out_path)
+
+def main():
+    parser = argparse.ArgumentParser(description='Preprocess cell type data using Cellpose models and additional processing steps.')
+
+    # Mandatory parameters
+    parser.add_argument('--path_roi_csv', type=str, help='Path to the CSV file containing ROI information.', required=False)
+    parser.add_argument('--output_dir', type=str, help='Directory to save outputs.', required=False)
+    parser.add_argument('--path_folder_patch_imgs', type=str, help='Path to the folder containing patch images.', required=False)
 
 
-        segmentation_channels = create_segmentation_channels(outlines_list, results_df, include_multiple_matches=False)
-        segmentation_channels_multi = create_segmentation_channels(outlines_list, results_df, include_multiple_matches=True)
-        
-        # Save results
-        np.save(out_path_calculation / f"{Path(image_name).stem}_segmentation_channels.npy", segmentation_channels)
-        np.save(out_path_calculation / f"{Path(image_name).stem}_segmentation_channels_multi.npy", segmentation_channels_multi)
-        results_df.to_pickle(out_path_calculation / f"{Path(image_name).stem}_results_df.pckl")
+    # Optional parameters
+    parser.add_argument('--path_roi_csv_2', type=str, help='Path to the additional CSV file containing ROI information, if any.', default=None)
+    parser.add_argument('--no_roi_infos', action='store_true', help='Whether to print ROI information.', default=preprocess_cell_type_data_params["no_roi_infos"])
+    parser.add_argument('--tip_the_balance', type=float, help="""Balance tipping value for comparison logic between original and Hema patches. Default is 0.
+                        If the number of matches in the original patch is greater than the number of matches in the Hema patch plus this value,
+                        the original patch is used.""", default=preprocess_cell_type_data_params["tip_the_balance"])
+    parser.add_argument('--replacements', type=str, help='Path to a pickle file containing the replacements dictionary or the dictionary itself.', default=preprocess_cell_type_data_params["replacements"])
+    parser.add_argument('--path_deepliif_hema_gan_weights', type=str, help='Path to the deepliif hema GAN weights.', default=preprocess_cell_type_data_params["path_deepliif_hema_gan_weights"])
+    parser.add_argument('--viz', action='store_true', help='Enable visualization of segmentation channels and ROI points.', default=preprocess_cell_type_data_params["viz"])
 
-        display_segmentation_channels(segmentation_channels, image_name, save_path=out_path_viz)
-        plot_circles_and_roi_points(outlines_list, results_df, patch, save_path=out_path_viz / f"{Path(image_name).stem}.png")
-
-
-if __name__ == "__main__":
-    # Example call to the function
-    # path_other_patches = Path("/home/fabian/projects/phd/ssd_data/first_patches_omero_upload")
-    path_roi_csv = Path('/home/fabian/projects/phd/angiosarkom_pdl1_prediction') / 'data' / 'cell_segmentation_first_go_full_Batch_ROI_Export_19sep23.csv'
-    # path_roi_csv_cnn = Path('/home/fabian/projects/phd/angiosarkom_pdl1_prediction') / 'data' / 'cell_segmentation_tumor_patches_CNN_prediction_full_Batch_ROI_Export_19sep23.csv'
-    # path_df = Path('/home/fabian/projects/phd/angiosarkom_pdl1_prediction') / 'data' / "pdl1_he_mask_patches_6mar23_tumor_non_tumor_cv_splits.feather"
-    # path_df = Path('/home/fabian/projects/phd/APEDIA/data/example_cell_type_preprocess_path_df.feather')
-    # path_cnn_pred_patches_df = Path('/home/fabian/projects/phd/ssd_data/predictd_patches_15may23/extracted_patches_df.feather')
-
-    # first_omero_patches = list(path_other_patches.rglob("*.png"))
-    # first_omero_patches = [p for p in first_omero_patches if re.match(r".*W\d+.*PD-L1.*.png", p.name)]
-    out_path = '/home/fabian/projects/phd/APEDIA/data/outputs/cell_type_preprocessing'
-    seg_patch_folder = Path("/home/fabian/projects/phd/APEDIA/data/example_seg_patches/")
+    args = parser.parse_args()
 
 
-    hema_tip_the_balance = np.Inf
-    original_tip_the_balance = -np.Inf
-    fair_balance = 0
+    # Check if args.replacements is a string (indicating a file path)
+    if isinstance(args.replacements, str):
+        with open(args.replacements, 'rb') as file:
+            args.replacements = pickle.load(file)
 
-    tip_the_balance = fair_balance
+    # Set some parameters manually for now
+    args.path_roi_csv = Path('/home/fabian/projects/phd/angiosarkom_pdl1_prediction') / 'data' / 'cell_segmentation_first_go_full_Batch_ROI_Export_19sep23.csv'
+    args.output_dir = '/home/fabian/projects/phd/APEDIA/data/outputs/cell_type_preprocessing'
+    args.path_folder_patch_imgs = Path("/home/fabian/projects/phd/APEDIA/data/example_seg_patches/")
 
+    
+    # Call the preprocessing function
     preprocess_cell_type_data(
-        out_path=out_path,
-        path_folder_patch_imgs=seg_patch_folder,
-        path_roi_csv=path_roi_csv,
-        roi_infos=True,
-        tip_the_balance=tip_the_balance,
-        replacements=preprocess_cell_type_data_replacement_params
+        output_dir=args.output_dir,
+        path_folder_patch_imgs=args.path_folder_patch_imgs,
+        path_roi_csv=Path(args.path_roi_csv),
+        path_roi_csv_2=args.path_roi_csv_2,
+        no_roi_infos=args.no_roi_infos,
+        tip_the_balance=args.tip_the_balance,
+        replacements=args.replacements,
+        path_deepliif_hema_gan_weights=args.path_deepliif_hema_gan_weights,
+        viz=args.viz
     )
+
+if __name__ == '__main__':
+    main()
+

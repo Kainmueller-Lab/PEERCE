@@ -1,7 +1,3 @@
-preprocess_cell_type_data_params = {
-    
-}
-
 preprocess_cell_type_data_replacement_params = {
     'TZ neg.': 'tz_neg',
     'TZ neg': 'tz_neg',
@@ -17,6 +13,14 @@ preprocess_cell_type_data_replacement_params = {
     'KeineTZ': 'other',
     # unknown what's right
     'Keine TZ pos': 'other',
+}
+
+preprocess_cell_type_data_params = {
+    "no_roi_infos": False,
+    "tip_the_balance": 0,
+    "replacements": preprocess_cell_type_data_replacement_params,
+    "path_deepliif_hema_gan_weights": None,
+    "viz": False,
 }
 
 train_cell_type_detection_params = {

@@ -1,8 +1,11 @@
 import argparse
+import pickle
 from apedia.utils.params import train_tumor_patch_detector_params
 from apedia.train_tumor_patch_detector import train_tumor_patch_detector
 from apedia.utils.params import train_cell_type_detection_params
 from apedia.train_cell_type_detector import train_cell_type_detector
+from apedia.utils.params import preprocess_cell_type_data_params
+from apedia.preprocess_cell_type_data import preprocess_cell_type_data
 
 def train_tumor_patch_detector_handler(args):
     # Convert argparse.Namespace to a dictionary
@@ -66,6 +69,37 @@ def setup_cell_type_detector_subparser(subparsers):
     # Set the default function to handle cell type detector training
     parser_ctd.set_defaults(func=train_cell_type_detector_handler)
 
+def preprocess_cell_type_data_handler(args):
+    # Convert argparse.Namespace to a dictionary
+    args_dict = vars(args)
+    # Since 'replacements' is expected to be a dict directly or a path to a pickle file, handle loading if it's a string
+    if isinstance(args.replacements, str):
+        try:
+            with open(args.replacements, 'rb') as file:
+                args_dict['replacements'] = pickle.load(file)
+        except Exception as e:
+            print(f"Failed to load replacements from file: {e}")
+            return
+    # Call the preprocessing function with the args dictionary
+    preprocess_cell_type_data(**args_dict)
+
+def setup_preprocess_cell_type_data_subparser(subparsers):
+    parser_pcd = subparsers.add_parser('preprocess_cell_type_data', help='Preprocess cell type data using Cellpose models and additional processing steps.')
+
+    # Mandatory parameters
+    parser_pcd.add_argument('--path_roi_csv', type=str, help='Path to the CSV file containing ROI information.')
+    parser_pcd.add_argument('--output_dir', type=str, help='Directory to save outputs.')
+    parser_pcd.add_argument('--path_folder_patch_imgs', type=str, help='Path to the folder containing patch images.')
+
+    # Optional parameters
+    parser_pcd.add_argument('--path_roi_csv_2', type=str, help='Path to the additional CSV file containing ROI information, if any.', default=preprocess_cell_type_data_params.get('path_roi_csv_2'))
+    parser_pcd.add_argument('--no_roi_infos', action='store_true', help='Whether to print ROI information.', default=preprocess_cell_type_data_params.get('no_roi_infos'))
+    parser_pcd.add_argument('--tip_the_balance', type=float, help='Balance tipping value for comparison logic.', default=preprocess_cell_type_data_params.get('tip_the_balance'))
+    parser_pcd.add_argument('--replacements', help='Path to a pickle file containing the replacements dictionary or the dictionary itself.', default=preprocess_cell_type_data_params.get('replacements'))
+    parser_pcd.add_argument('--path_deepliif_hema_gan_weights', type=str, help='Path to the deepliif hema GAN weights.', default=preprocess_cell_type_data_params.get('path_deepliif_hema_gan_weights'))
+    parser_pcd.add_argument('--viz', action='store_true', help='Enable visualization.', default=preprocess_cell_type_data_params.get('viz'))
+
+    parser_pcd.set_defaults(func=preprocess_cell_type_data_handler)
 
 def main():
     parser = argparse.ArgumentParser(prog="apedia", description='APEDIA Project CLI')
