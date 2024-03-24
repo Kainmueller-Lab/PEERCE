@@ -120,31 +120,23 @@ def main():
     parser.add_argument('--viz', action='store_true', help='Enable visualization of segmentation channels and ROI points.', default=preprocess_cell_type_data_params["viz"])
 
     args = parser.parse_args()
+    
+    params = vars(args)
 
 
-    # Check if args.replacements is a string (indicating a file path)
-    if isinstance(args.replacements, str):
-        with open(args.replacements, 'rb') as file:
-            args.replacements = pickle.load(file)
+    # Check if params['replacements'] is a string (indicating a file path)
+    if isinstance(params['replacements'], str):
+        with open(params['replacements'], 'rb') as file:
+            params['replacements'] = pickle.load(file)
 
     # Set some parameters manually for now
-    args.path_roi_csv = Path('/home/fabian/projects/phd/angiosarkom_pdl1_prediction') / 'data' / 'cell_segmentation_first_go_full_Batch_ROI_Export_19sep23.csv'
-    args.output_dir = '/home/fabian/projects/phd/APEDIA/data/outputs/cell_type_preprocessing'
-    args.path_folder_patch_imgs = Path("/home/fabian/projects/phd/APEDIA/data/example_seg_patches/")
+    params['path_roi_csv'] = Path('/home/fabian/projects/phd/angiosarkom_pdl1_prediction') / 'data' / 'cell_segmentation_first_go_full_Batch_ROI_Export_19sep23.csv'
+    params['output_dir'] = '/home/fabian/projects/phd/APEDIA/data/outputs/cell_type_preprocessing'
+    params['path_folder_patch_imgs'] = Path("/home/fabian/projects/phd/APEDIA/data/example_seg_patches/")
 
     
     # Call the preprocessing function
-    preprocess_cell_type_data(
-        output_dir=args.output_dir,
-        path_folder_patch_imgs=args.path_folder_patch_imgs,
-        path_roi_csv=Path(args.path_roi_csv),
-        path_roi_csv_2=args.path_roi_csv_2,
-        no_roi_infos=args.no_roi_infos,
-        tip_the_balance=args.tip_the_balance,
-        replacements=args.replacements,
-        path_deepliif_hema_gan_weights=args.path_deepliif_hema_gan_weights,
-        viz=args.viz
-    )
+    preprocess_cell_type_data(**params)
 
 if __name__ == '__main__':
     main()

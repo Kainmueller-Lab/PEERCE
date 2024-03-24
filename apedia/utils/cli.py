@@ -80,6 +80,8 @@ def preprocess_cell_type_data_handler(args):
         except Exception as e:
             print(f"Failed to load replacements from file: {e}")
             return
+    # Remove 'func' key
+    args_dict.pop('func', None)
     # Call the preprocessing function with the args dictionary
     preprocess_cell_type_data(**args_dict)
 
@@ -110,6 +112,9 @@ def main():
 
     # Setup for cell type detector subcommand
     setup_cell_type_detector_subparser(subparsers)
+    
+    # Setup for cell type data preprocessing subcommand
+    setup_preprocess_cell_type_data_subparser(subparsers)
 
     args = parser.parse_args()
     if hasattr(args, 'func'):

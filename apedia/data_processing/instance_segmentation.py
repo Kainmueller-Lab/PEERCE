@@ -220,11 +220,11 @@ def process_patch(patch, roi_df, roi_coord_list, image_name, model, replacements
 
 def create_cellpose_instance_segmentations_add_rois(path_folder_patch_imgs, out_path_calculation, out_path_viz, roi_df, model, make_hema, viz, tip_the_balance, replacements=None):
     for idx, image_name in enumerate(tqdm(roi_df['image_name'].unique())):
-        if idx < 18:
-            continue
-        # only to 20 patches for testing
-        if idx > 20:
-            break
+        # if idx < 18:
+        #     continue
+        # # only to 20 patches for testing
+        # if idx > 20:
+        #     break
         path_patch = path_folder_patch_imgs / image_name
         if not path_patch.is_file():
             print(f"Patch {path_patch} does not exist.")
