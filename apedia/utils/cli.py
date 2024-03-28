@@ -126,7 +126,7 @@ def predict_tps_handler(args):
 
 def setup_predict_tps_subparser(subparsers):
     # Subcommand for TPS prediction
-    parser_ptp = subparsers.add_parser('predict_tps', help='Predict Tumor Proportion Score (TPS) from an OME-TIFF file.')
+    parser_ptp = subparsers.add_parser('predict_tps_wsi', help='Predict Tumor Proportion Score (TPS) from an OME-TIFF file.')
 
     # Add arguments specific to predict_tps
     parser_ptp.add_argument('--ometiff_path', type=str, default=predict_tps_params['ometiff_path'], help='Path to the OME-TIFF file.')
