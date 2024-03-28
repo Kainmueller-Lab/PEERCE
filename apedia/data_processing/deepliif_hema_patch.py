@@ -5,7 +5,7 @@ import os
 from torchvision.transforms import ToPILImage
 
 from apedia.data_processing.deepliif_networks import define_G
-from apedia.data_processing.model_loader import download_file_from_url
+from apedia.deep_learning.model_loader import download_file_from_url
 
 
 def transform_deepliif(img):

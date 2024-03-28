@@ -5,7 +5,7 @@ from cellpose import models as cp_models
 # import torch
 
 from apedia.data_processing.deepliif_hema_patch import MakeHemaPatch
-from apedia.data_processing.model_loader import get_seg_model, get_tp_pred_model
+from apedia.deep_learning.model_loader import get_seg_model, get_tp_pred_model
 from apedia.data_processing.timm_convnext_model_ds_predictions_viz import WSIOmeDataset3channelSimple
 from apedia.data_processing.wsi_patch_df_6channel_dataset import get_valid_transform_6chan_alb
 # from apedia.deep_learning.unet_functionality import NInputChanUnet
@@ -40,7 +40,7 @@ def predict_tps(ometiff_path, output_folder, tp_pred_model=None, seg_model=None,
         filtered_df = wsi_prediction_df.sort_values('prediction', ascending=False).head(10).copy().reset_index(drop=True)
     
     # Reduce filtered_df to 20 random samples
-    # filtered_df = filtered_df.sample(20).copy().reset_index(drop=True)
+    filtered_df = filtered_df.sample(20).copy().reset_index(drop=True)
     
     # Predict cell types in the tumor patches
     # Create segmentation model

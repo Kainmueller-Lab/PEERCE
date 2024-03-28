@@ -27,6 +27,10 @@ def download_file_from_url(url, destination_path):
         # Verify download completeness
         downloaded_size = os.path.getsize(temp_path)
         if total_size_in_bytes != 0 and downloaded_size == total_size_in_bytes:
+            # Ensure the destination directory exists
+            destination_dir = os.path.dirname(destination_path)
+            if not os.path.exists(destination_dir):
+                os.makedirs(destination_dir, exist_ok=True)
             # Move temporary file to destination if fully downloaded
             os.rename(temp_path, destination_path)
             print(f"Downloaded weights to {destination_path}")
