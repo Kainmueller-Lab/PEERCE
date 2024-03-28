@@ -6,12 +6,16 @@ from apedia.utils.params import train_cell_type_detection_params
 from apedia.train_cell_type_detector import train_cell_type_detector
 from apedia.utils.params import preprocess_cell_type_data_params
 from apedia.preprocess_cell_type_data import preprocess_cell_type_data
+from apedia.predict_tps import predict_tps
+from apedia.utils.params import predict_tps_params
+
 
 def train_tumor_patch_detector_handler(args):
     # Convert argparse.Namespace to a dictionary
     args_dict = vars(args)
     # Call the training function with the args dictionary
     train_tumor_patch_detector(args_dict)
+
 
 def setup_tumor_patch_detector_subparser(subparsers):
     # Subcommand for tumor patch detector training
@@ -34,12 +38,14 @@ def setup_tumor_patch_detector_subparser(subparsers):
     parser_tpd.add_argument('--do_cosine_annealing', type=lambda x: (str(x).lower() == 'true'), default=train_tumor_patch_detector_params['do_cosine_annealing'], help='Whether to use cosine annealing')
     parser_tpd.set_defaults(func=train_tumor_patch_detector_handler)
 
+
 def train_cell_type_detector_handler(args):
     # Convert argparse.Namespace to a dictionary
     args_dict = vars(args)
     # Call the training function with the args dictionary
     train_cell_type_detector(args_dict)
-    
+
+
 def setup_cell_type_detector_subparser(subparsers):
     # Subcommand for cell type detector training
     parser_ctd = subparsers.add_parser('train_cell_type_detector', help='Train Cell Type Detector')
@@ -69,6 +75,7 @@ def setup_cell_type_detector_subparser(subparsers):
     # Set the default function to handle cell type detector training
     parser_ctd.set_defaults(func=train_cell_type_detector_handler)
 
+
 def preprocess_cell_type_data_handler(args):
     # Convert argparse.Namespace to a dictionary
     args_dict = vars(args)
@@ -84,6 +91,7 @@ def preprocess_cell_type_data_handler(args):
     args_dict.pop('func', None)
     # Call the preprocessing function with the args dictionary
     preprocess_cell_type_data(**args_dict)
+
 
 def setup_preprocess_cell_type_data_subparser(subparsers):
     parser_pcd = subparsers.add_parser('preprocess_cell_type_data', help='Preprocess cell type data using Cellpose models and additional processing steps.')
@@ -103,6 +111,31 @@ def setup_preprocess_cell_type_data_subparser(subparsers):
 
     parser_pcd.set_defaults(func=preprocess_cell_type_data_handler)
 
+
+def predict_tps_handler(args):
+    # Extracting command line arguments and pdate predict_tps_params with them
+    # A custom model object can be set via the params.py file
+    predict_tps_params.update({
+        "ometiff_path": args.ometiff_path,
+        "output_folder": args.output_folder,
+    })
+
+    # Assuming predict_tps function signature and functionality is compatible with these arguments
+    predict_tps(**predict_tps_params)
+
+
+def setup_predict_tps_subparser(subparsers):
+    # Subcommand for TPS prediction
+    parser_ptp = subparsers.add_parser('predict_tps', help='Predict Tumor Proportion Score (TPS) from an OME-TIFF file.')
+
+    # Add arguments specific to predict_tps
+    parser_ptp.add_argument('--ometiff_path', type=str, default=predict_tps_params['ometiff_path'], help='Path to the OME-TIFF file.')
+    parser_ptp.add_argument('--output_folder', type=str, default=predict_tps_params['output_folder'], help='Output folder for the predictions.')
+
+    # Set the default function to handle TPS prediction
+    parser_ptp.set_defaults(func=predict_tps_handler)
+
+
 def main():
     parser = argparse.ArgumentParser(prog="apedia", description='APEDIA Project CLI')
     subparsers = parser.add_subparsers(help='Available commands')
@@ -115,6 +148,9 @@ def main():
     
     # Setup for cell type data preprocessing subcommand
     setup_preprocess_cell_type_data_subparser(subparsers)
+    
+    # Setup for predict_tps subcommand
+    setup_predict_tps_subparser(subparsers)
 
     args = parser.parse_args()
     if hasattr(args, 'func'):

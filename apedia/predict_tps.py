@@ -1,16 +1,15 @@
 from datetime import datetime
 from pathlib import Path
 from cellpose import models as cp_models
-# import pandas as pd
-# import torch
+import argparse
 
 from apedia.data_processing.deepliif_hema_patch import MakeHemaPatch
 from apedia.deep_learning.model_loader import get_seg_model, get_tp_pred_model
 from apedia.data_processing.timm_convnext_model_ds_predictions_viz import WSIOmeDataset3channelSimple
 from apedia.data_processing.wsi_patch_df_6channel_dataset import get_valid_transform_6chan_alb
-# from apedia.deep_learning.unet_functionality import NInputChanUnet
 from apedia.utils.read_and_visualize_ome_tiff import OmeTiffFile
 from apedia.deep_learning.wsi_tps_prediction import TpsSegmentationDataset, identify_tumor_patches_wsi, predict_cell_types_wsi
+from apedia.utils.params import predict_tps_params
 
 
 def predict_tps(ometiff_path, output_folder, tp_pred_model=None, seg_model=None, cellpose_model=None):    
@@ -57,9 +56,25 @@ def predict_tps(ometiff_path, output_folder, tp_pred_model=None, seg_model=None,
     filtered_df = predict_cell_types_wsi(dset_tps, cellpose_model, make_hema, seg_model, filtered_df, wsi_prediction_folder, wsi_name_id)
     
 
+def main():
+    parser = argparse.ArgumentParser(description="Predict Tumor Proportion Score (TPS) for a given OME-TIFF WSI file.")
+    parser.add_argument('--ometiff_path', type=str, default=predict_tps_params['ometiff_path'], help='Path to the OME-TIFF file.')
+    parser.add_argument('--output_folder', type=str, default=predict_tps_params['output_folder'], help='Output folder for the predictions.')
+    args = parser.parse_args()
+    
+    # Update predict_tps_params with command line arguments
+    # A custom model object can be set via the params.py file
+    predict_tps_params.update({
+        "ometiff_path": args.ometiff_path,
+        "output_folder": args.output_folder,
+    })
+    
+    # for now, use custom paths
+    # predict_tps_params['ometiff_path'] = "/home/fabian/projects/phd/APEDIA/data/example.ome.tiff"
+    # predict_tps_params['output_folder'] = "/home/fabian/projects/phd/APEDIA/data/outputs/wsi_tps_predictions/"
+    
+    # You might need to adjust the predict_tps function to accept threshold, sample_size, and viz as parameters
+    predict_tps(**predict_tps_params)
 
 if __name__ == '__main__':
-    ometiff_path = '/home/fabian/raid5/Angiosarkom-Scans/ometiff_PD-L1/W134-22_PD-L1.ome.tiff'
-    output_folder = "/home/fabian/projects/phd/APEDIA/data/outputs/wsi_tps_predictions/"
-    
-    predict_tps(ometiff_path, output_folder)
+    main()

@@ -61,3 +61,11 @@ train_tumor_patch_detector_params = {
     "num_workers": 4,
     "do_cosine_annealing": False,
 }
+
+predict_tps_params = {
+    "ometiff_path": "/path/to/your/file.ome.tiff",
+    "output_folder": "/path/to/your/output/folder/",
+    "tp_pred_model": None,
+    "seg_model": None,
+    "cellpose_model": None,
+}
