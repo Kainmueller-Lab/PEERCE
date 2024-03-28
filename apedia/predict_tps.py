@@ -39,9 +39,8 @@ def predict_tps(ometiff_path, output_folder, tp_pred_model=None, seg_model=None,
         wsi_prediction_df = identify_tumor_patches_wsi(wsi_dataset, tp_pred_model, wsi_name_id, wsi_prediction_folder, threshold=0.0, viz=False)
         filtered_df = wsi_prediction_df.sort_values('prediction', ascending=False).head(10).copy().reset_index(drop=True)
     
-    # TODO - remove this
-    # for debugging, reduce filtered_df to 20 random samples
-    filtered_df = filtered_df.sample(20).copy().reset_index(drop=True)
+    # Reduce filtered_df to 20 random samples
+    # filtered_df = filtered_df.sample(20).copy().reset_index(drop=True)
     
     # Predict cell types in the tumor patches
     # Create segmentation model
@@ -52,7 +51,7 @@ def predict_tps(ometiff_path, output_folder, tp_pred_model=None, seg_model=None,
     if cellpose_model is None:
         cellpose_model = cp_models.Cellpose(gpu=True, model_type='nuclei')
     
-    print('Predict cell types in the tumor patches')
+    print('Predict cell types in tumor patches')
     dset_tps = TpsSegmentationDataset(filtered_df)
     make_hema = MakeHemaPatch()
     filtered_df = predict_cell_types_wsi(dset_tps, cellpose_model, make_hema, seg_model, filtered_df, wsi_prediction_folder, wsi_name_id)
