@@ -4,11 +4,11 @@
 
 **Note**: This repository is currently under construction. More features and documentation will be added as the project progresses.
 
-## Scripts in the Repository
+## Functionality in the Repository
 
 The APEDIA project includes a series of scripts designed to preprocess data, train models, and predict scores relevant to PD-L1 expression in angiosarcoma. Below is a brief overview of each script and its purpose.
 
-### Training Scripts
+### Training Functionality
 
 1. **Tumor Patch Detector Training**
    - **Script Name**: `train_tumor_patch_detector.py`
@@ -18,13 +18,13 @@ The APEDIA project includes a series of scripts designed to preprocess data, tra
    - **Script Name**: `train_cell_type_detector.py`
    - **Description**: Trains a model to differentiate between PD-L1 positive tumor cells, PD-L1 negative tumor cells, and other cells within tumor patches.
 
-### Preprocessing Script
+### Preprocessing Funtionality
 
 - **Preprocess Data for Cell Type Detection Training**
   - **Script Name**: `preprocess_cell_type_data.py`
   - **Description**: Leverages trained generalist models to transform sparse cell type annotations into annotations suitable for training. *Cellpose* is used to identify cell instances and outline the nuclei, eliminating the need for manual annotation of each cell's outline. A *DeepLIIF* generative adverserial network is employed to isolate the hema components from heavily PD-L1 stained areas, thereby enhancing Cellpose's precision in identifying cell instances. This preprocessing step is required for preparing the dataset for accurate cell type detection training.
 
-### Prediction Script
+### Prediction Functionality
 
 - **Predict Tumor Proportion Score (TPS) for WSIs**
   - **Script Name**: `predict_tps_wsi.py`
@@ -59,6 +59,38 @@ It is recommended to create a new environment using Python 3.8 (tested) or highe
 
     ```
     pip install -e .
+    ```
+
+## How to Use
+
+The functionality provided by APEDIA can be accessed in several ways, catering to different use cases and preferences.  
+Below are the methods to run the function to predicting the Tumor Proportion Score (TPS) from whole-slide images (WSIs).
+
+1. **Script Execution**  
+   The scripts included in the APEDIA project, like `predict_tps_wsi.py`, can be run directly from the command line. This method is straightforward and allows for quick execution of tasks. For example:
+
+    ```sh
+    python predict_tps_wsi.py --ometiff_path path/to/example.ome.tiff --output_folder path/to/output/folder/
+    ```
+
+2. **CLI Command**  
+   APEDIA provides a Command Line Interface (CLI) to facilitate easy access to its functionalities. The CLI commands abstract the script executions and offer a user-friendly way to interact with APEDIA. To predict the TPS using the CLI:
+
+    ```sh
+    apedia predict_tps_wsi --ometiff_path path/to/example.ome.tiff --output_folder path/to/output/folder/
+    ```
+
+3. **Jupyter Notebook Tutorial**  
+   For those who prefer an interactive approach or wish to understand the process in greater detail, the `predict_tps_wsi.ipynb` notebook offers a comprehensive guide. This notebook not only allows you to run the TPS prediction but also provides further information and context about the process. You can find this notebook in the `jupyter_notebook_tutorials` folder within the repository.
+
+4. **Importing as a Module**  
+   If you are developing a Python project and wish to integrate APEDIA's functionality directly, you can import the required functions into your Python scripts. This approach offers the most flexibility and allows for seamless integration with other Python projects. For instance:
+
+    ```python
+    from apedia.predict_tps_wsi import predict_tps_wsi
+
+    # Usage example
+    predict_tps_wsi(ometiff_path='path/to/example.ome.tiff', output_folder='path/to/output/folder/')
     ```
 
 
