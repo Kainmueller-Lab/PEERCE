@@ -124,7 +124,8 @@ def main():
     # for now, fixed df_path and output_dir
     params['df_path'] = "/home/fabian/projects/phd/APEDIA/data/example_df_segmentation.feather"
     # example, preprocessed via APEDIA:
-    params['df_path'] = "/home/fabian/projects/phd/APEDIA/data/outputs/cell_type_preprocessing_24mar24/24mar24_hema_patch_if_more_matches_updated_roi_df.feather"
+    params['df_path'] = '/home/fabian/projects/phd/APEDIA/data/example_df_segmentation_reduced.feather'
+    
     params['output_dir'] = '/home/fabian/projects/phd/APEDIA/data/outputs'
     params['epochs'] = 2
 

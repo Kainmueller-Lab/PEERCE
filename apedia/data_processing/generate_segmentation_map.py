@@ -96,7 +96,7 @@ def create_segmentation_df(out_path_calculation, n_splits=5, random_state=42):
         'path_exact_one_match': string_paths_segmentation_arrays, 
         'path_oneplus_matches': string_paths_segmentation_arrays_multi, 
         'path_patch_png': string_paths_png_files,
-        'wsi_name': wsi_names, 'cv': cv_list
+        'wsi_name': wsi_names, 'cv_split': cv_list
     })
     
     return df

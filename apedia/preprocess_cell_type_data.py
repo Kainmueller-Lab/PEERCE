@@ -100,6 +100,7 @@ def preprocess_cell_type_data(output_dir, path_folder_patch_imgs, path_roi_csv,
     print(f"Saving DataFrame to {df_out_path}")
     df.to_feather(df_out_path)
 
+
 def main():
     parser = argparse.ArgumentParser(description='Preprocess cell type data using Cellpose models and additional processing steps.')
 
@@ -130,9 +131,9 @@ def main():
             params['replacements'] = pickle.load(file)
 
     # Set some parameters manually for now
-    params['path_roi_csv'] = Path('/home/fabian/projects/phd/angiosarkom_pdl1_prediction') / 'data' / 'cell_segmentation_first_go_full_Batch_ROI_Export_19sep23.csv'
-    params['output_dir'] = '/home/fabian/projects/phd/APEDIA/data/outputs/cell_type_preprocessing'
-    params['path_folder_patch_imgs'] = Path("/home/fabian/projects/phd/APEDIA/data/example_seg_patches/")
+    # params['path_roi_csv'] = Path("/home/fabian/projects/phd/APEDIA/data/example_roi_table.csv")
+    # params['output_dir'] = '/home/fabian/projects/phd/APEDIA/data/outputs/cell_type_preprocessing'
+    # params['path_folder_patch_imgs'] = Path("/home/fabian/projects/phd/APEDIA/data/example_seg_patches/")
 
     
     # Call the preprocessing function

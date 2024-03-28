@@ -12,7 +12,20 @@ from apedia.deep_learning.wsi_tps_prediction import TpsSegmentationDataset, iden
 from apedia.utils.params import predict_tps_params
 
 
-def predict_tps(ometiff_path, output_folder, tp_pred_model=None, seg_model=None, cellpose_model=None):    
+def predict_tps(ometiff_path, output_folder, tp_pred_model=None, seg_model=None, cellpose_model=None):
+    """
+    Predicts tumor patches and cell types in a whole slide image (WSI).
+
+    Args:
+        ometiff_path (str): The path to the OME-TIFF WSI file.
+        output_folder (str): The path to the output folder where the predictions will be saved.
+        tp_pred_model (optional): The tumor patch prediction model. If not provided, a default model will be used.
+        seg_model (optional): The segmentation model. If not provided, a default model will be used.
+        cellpose_model (optional): The Cellpose model. If not provided, a default model will be used.
+
+    Returns:
+        None
+    """
     # Define the output folder
     wsi_name = Path(ometiff_path).name
     wsi_name_id = wsi_name.split('.')[0]
