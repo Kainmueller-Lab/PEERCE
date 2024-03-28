@@ -42,4 +42,4 @@ pip-delete-this-directory.txt
 data/
 weights/
 .gitignore_jan
-jupyter_notebooks/modify_df_to_default.ipynb
+jupyter_notebook_tutorials/modify_df_to_default.ipynb
