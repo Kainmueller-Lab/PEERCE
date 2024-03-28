@@ -43,13 +43,13 @@ class MakeHemaPatch:
         if path_network_weights is None:
             # Construct the path to the weights directory relative to this file
             current_dir = os.path.dirname(__file__)
-            path_network_weights = os.path.join(current_dir, '..', '..', 'weights', 'latest_net_G1.pth')
+            path_network_weights = os.path.join(current_dir, '..', '..', 'weights', 'deepliif_latest_net_G1.pth')
             
             # Check if weights exist locally
             if not os.path.exists(path_network_weights):
                 print("Hema model weights not found locally. Downloading from Hugging Face...")
                 # If weights don't exist locally, download them
-                url = "https://huggingface.co/FabianReith/apedia/resolve/main/latest_net_G1.pth"
+                url = "https://huggingface.co/FabianReith/apedia/resolve/main/deepliif_latest_net_G1.pth"
                 # Ensure the directory exists
                 os.makedirs(os.path.dirname(path_network_weights), exist_ok=True)
                 download_file_from_url(url, path_network_weights)
