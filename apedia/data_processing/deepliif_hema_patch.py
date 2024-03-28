@@ -5,7 +5,7 @@ import os
 from torchvision.transforms import ToPILImage
 
 from apedia.data_processing.deepliif_networks import define_G
-
+from apedia.data_processing.model_loader import download_file_from_url
 
 
 def transform_deepliif(img):
@@ -39,17 +39,25 @@ def inverse_transform_deepliif(tensor, to_pil=True, to_array=True):
     
     
 class MakeHemaPatch:
-    def __init__(self, path_network_weights=None): # "/home/fabian/projects/phd/deepliif/DeepLIIF/model-server/DeepLIIF_Latest_Model/latest_net_G1.pth"
+    def __init__(self, path_network_weights=None):
         if path_network_weights is None:
             # Construct the path to the weights directory relative to this file
             current_dir = os.path.dirname(__file__)
-            path_network_weights = os.path.join(current_dir, '..', '..', 'weights', 'deepliif_latest_net_G1.pth')
-
+            path_network_weights = os.path.join(current_dir, '..', '..', 'weights', 'latest_net_G1.pth')
+            
+            # Check if weights exist locally
+            if not os.path.exists(path_network_weights):
+                print("Hema model weights not found locally. Downloading from Hugging Face...")
+                # If weights don't exist locally, download them
+                url = "https://huggingface.co/FabianReith/apedia/resolve/main/latest_net_G1.pth"
+                # Ensure the directory exists
+                os.makedirs(os.path.dirname(path_network_weights), exist_ok=True)
+                download_file_from_url(url, path_network_weights)
         
         hema_generator = define_G(3, 3, 64, 'resnet_9blocks', 'batch', True, 'normal', 0.02, [0], 'zero')
         if isinstance(hema_generator, torch.nn.DataParallel):
             hema_generator = hema_generator.module
-        hema_generator.load_state_dict(torch.load(path_network_weights))
+        hema_generator.load_state_dict(torch.load(path_network_weights, map_location='cuda'))
         self.hema_generator = hema_generator.cuda()
         
     def __call__(self, img):
