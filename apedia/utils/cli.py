@@ -97,9 +97,9 @@ def setup_preprocess_cell_type_data_subparser(subparsers):
     parser_pcd = subparsers.add_parser('preprocess_cell_type_data', help='Preprocess cell type data using Cellpose models and additional processing steps.')
 
     # Mandatory parameters
-    parser_pcd.add_argument('--path_roi_csv', type=str, help='Path to the CSV file containing ROI information.')
-    parser_pcd.add_argument('--output_dir', type=str, help='Directory to save outputs.')
-    parser_pcd.add_argument('--path_folder_patch_imgs', type=str, help='Path to the folder containing patch images.')
+    parser_pcd.add_argument('--path_roi_csv', type=str, help='Path to the CSV file containing ROI information.', required=True)
+    parser_pcd.add_argument('--output_dir', type=str, help='Directory to save outputs.', required=True)
+    parser_pcd.add_argument('--path_folder_patch_imgs', type=str, help='Path to the folder containing patch images.', required=True)
 
     # Optional parameters
     parser_pcd.add_argument('--path_roi_csv_2', type=str, help='Path to the additional CSV file containing ROI information, if any.', default=preprocess_cell_type_data_params.get('path_roi_csv_2'))
