@@ -12,7 +12,7 @@ from apedia.deep_learning.wsi_tps_prediction import TpsSegmentationDataset, iden
 from apedia.utils.params import predict_tps_params
 
 
-def predict_tps(ometiff_path, output_folder, tp_pred_model=None, seg_model=None, cellpose_model=None):
+def predict_tps_wsi(ometiff_path, output_folder, tp_pred_model=None, seg_model=None, cellpose_model=None):
     """
     Predicts tumor patches and cell types in a whole slide image (WSI).
 
@@ -87,7 +87,7 @@ def main():
     # predict_tps_params['output_folder'] = "/home/fabian/projects/phd/APEDIA/data/outputs/wsi_tps_predictions/"
     
     # You might need to adjust the predict_tps function to accept threshold, sample_size, and viz as parameters
-    predict_tps(**predict_tps_params)
+    predict_tps_wsi(**predict_tps_params)
 
 if __name__ == '__main__':
     main()

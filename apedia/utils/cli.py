@@ -6,7 +6,7 @@ from apedia.utils.params import train_cell_type_detection_params
 from apedia.train_cell_type_detector import train_cell_type_detector
 from apedia.utils.params import preprocess_cell_type_data_params
 from apedia.preprocess_cell_type_data import preprocess_cell_type_data
-from apedia.predict_tps import predict_tps
+from apedia.predict_tps_wsi import predict_tps_wsi
 from apedia.utils.params import predict_tps_params
 
 
@@ -121,7 +121,7 @@ def predict_tps_handler(args):
     })
 
     # Assuming predict_tps function signature and functionality is compatible with these arguments
-    predict_tps(**predict_tps_params)
+    predict_tps_wsi(**predict_tps_params)
 
 
 def setup_predict_tps_subparser(subparsers):
