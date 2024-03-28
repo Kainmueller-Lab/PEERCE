@@ -40,5 +40,6 @@ pip-delete-this-directory.txt
 
 # Custom folders
 data/
+weights/
 .gitignore_jan
 jupyter_notebooks/modify_df_to_default.ipynb
