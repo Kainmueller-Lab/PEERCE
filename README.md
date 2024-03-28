@@ -36,16 +36,31 @@ To set up APEDIA for development or usage, follow these steps:
 
 1. **Clone this Repository**
 
-```sh
-git clone https://github.com/Kainmueller-Lab/APEDIA
-cd APEDIA
-```
+    ```sh
+    git clone https://github.com/Kainmueller-Lab/APEDIA
+    cd APEDIA
+    ```
 
-2. **Install the package**
+2. **Create a new Python environment (Recommended)**  
+It is recommended to create a new environment using Python 3.8 (tested) or higher to avoid any compatibility issues with the dependencies. You can create a new environment using Conda or venv. For Conda, you can install the environment directly from the provided `environment.yml` file:
 
-```
-pip install -e .
-```
+    Using Conda: 
+
+      ```sh
+      conda env create -f environment.yml
+      conda activate apedia_env
+      ```  
+      If you prefer using pip to manage packages, you can install the dependencies from the `requirements.txt` file:
+      ```sh
+      pip install -r requirements.txt
+      ```
+
+3. **Install the package**
+
+    ```
+    pip install -e .
+    ```
+
 
 ## License
 
