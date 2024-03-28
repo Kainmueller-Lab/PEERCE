@@ -235,7 +235,7 @@ def create_cellpose_instance_segmentations_add_rois(path_folder_patch_imgs, out_
         roi_coord_list = [string_to_float_coords(i) for i in roi_df[roi_df.image_name == image_name].Points if not pd.isna(i)]
         
         results_df_patch, outlines_list_patch = process_patch(patch, roi_df, roi_coord_list, image_name, model, replacements=replacements)
-        results_df_hema, outlines_list_hema = process_patch(make_hema(patch), roi_df, roi_coord_list, image_name, model)
+        results_df_hema, outlines_list_hema = process_patch(make_hema(patch), roi_df, roi_coord_list, image_name, model, replacements=replacements)
         
         if results_df_patch['match_found'].sum() >= results_df_hema['match_found'].sum() + tip_the_balance:
             results_df, outlines_list = results_df_patch, outlines_list_patch

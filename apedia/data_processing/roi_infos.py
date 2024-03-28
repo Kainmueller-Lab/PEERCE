@@ -9,5 +9,5 @@ def print_roi_infos(roi_df):
     unique_names = [name for name in unique_names if not name.endswith("_patch")]
     total_unique_wsi = len(set(unique_names))
     print(f"{total_unique_wsi} total WSIs are annotated")
-    print(f"{roi_df.image_id.unique().shape[0]} Patches are annotated")
+    print(f"{roi_df.image_name.unique().shape[0]} Patches are annotated")
     print(f"{roi_df.roi_id.unique().shape[0]} cells are annotated")

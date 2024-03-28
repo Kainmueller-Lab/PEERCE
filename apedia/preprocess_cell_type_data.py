@@ -131,9 +131,10 @@ def main():
             params['replacements'] = pickle.load(file)
 
     # Set some parameters manually for now
-    # params['path_roi_csv'] = Path("/home/fabian/projects/phd/APEDIA/data/example_roi_table.csv")
-    # params['output_dir'] = '/home/fabian/projects/phd/APEDIA/data/outputs/cell_type_preprocessing'
-    # params['path_folder_patch_imgs'] = Path("/home/fabian/projects/phd/APEDIA/data/example_seg_patches/")
+    params['path_roi_csv'] = Path("/home/fabian/projects/phd/APEDIA/data/example_roi_table.csv")
+    params['path_roi_csv'] = "/home/fabian/projects/phd/APEDIA/data/example_roi_table_reduced.csv"
+    params['output_dir'] = '/home/fabian/projects/phd/APEDIA/data/outputs/cell_type_preprocessing'
+    params['path_folder_patch_imgs'] = Path("/home/fabian/projects/phd/APEDIA/data/example_seg_patches/")
 
     
     # Call the preprocessing function
