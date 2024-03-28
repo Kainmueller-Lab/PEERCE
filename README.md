@@ -84,7 +84,7 @@ Below are the methods to run the function to predicting the Tumor Proportion Sco
    For those who prefer an interactive approach or wish to understand the process in greater detail, the `predict_tps_wsi.ipynb` notebook offers a comprehensive guide. This notebook not only allows you to run the TPS prediction but also provides further information and context about the process. You can find this notebook in the `jupyter_notebook_tutorials` folder within the repository.
 
 4. **Importing as a Module**  
-   If you are developing a Python project and wish to integrate APEDIA's functionality directly, you can import the required functions into your Python scripts. This approach offers the most flexibility and allows for seamless integration with other Python projects. For instance:
+   If you are developing a Python project and wish to integrate APEDIA's functionality directly, you can import the required functions into your Python scripts. For instance:
 
     ```python
     from apedia.predict_tps_wsi import predict_tps_wsi
