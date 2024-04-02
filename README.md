@@ -32,6 +32,16 @@ The APEDIA project includes a series of scripts designed to preprocess data, tra
 
 ## Getting Started
 
+### System Requirements
+
+APEDIA has been developed and tested on **Linux/Ubuntu 22.04 LTS**. While APEDIA is designed to be cross-platform, running on a similar environment ensures the best compatibility and performance. Users on other systems may experience differences in execution or functionality.
+
+#### Hardware Requirements
+
+- **For TPS Inference**: A minimum of 4GB of GPU memory is required.
+- **For Model Training**: A minimum of 12GB GPU memory is recommended. Note that the specific GPU memory requirements can vary depending on the model type and batch size used during the training process.  
+
+
 To set up APEDIA for development or usage, follow these steps:
 
 1. **Clone this Repository**
