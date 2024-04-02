@@ -61,7 +61,7 @@ def preprocess_cell_type_data(output_dir, path_folder_patch_imgs, path_roi_csv,
     # Prepare output directories
     # add a date string to the output path
     current_date_string = datetime.datetime.now().strftime('%d%b%y').lower()
-    output_dir = str(output_dir) + f"_{current_date_string}"
+    output_dir = str(output_dir) / f"cell_type_preprocessing_{current_date_string}"
     output_dir = Path(output_dir)
     out_path_calculation = output_dir / 'calculation'
     out_path_calculation.mkdir(parents=True, exist_ok=True)
