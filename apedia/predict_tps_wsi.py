@@ -83,8 +83,8 @@ def main():
     })
     
     # for now, use custom paths
-    # predict_tps_params['ometiff_path'] = "/home/fabian/projects/phd/APEDIA/data/example.ome.tiff"
-    # predict_tps_params['output_folder'] = "/home/fabian/projects/phd/APEDIA/data/outputs/wsi_tps_predictions/"
+    predict_tps_params['ometiff_path'] = "/home/fabian/projects/phd/APEDIA/data/example.ome.tiff"
+    predict_tps_params['output_folder'] = "/home/fabian/projects/phd/APEDIA/data/outputs/wsi_tps_predictions/"
     
     # You might need to adjust the predict_tps function to accept threshold, sample_size, and viz as parameters
     predict_tps_wsi(**predict_tps_params)

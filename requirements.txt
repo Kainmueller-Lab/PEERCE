@@ -9,3 +9,5 @@ cellpose==2.2
 scikit-image==0.21.*
 spams==2.6.*
 staintools==2.1.*
+pyarrow==15.*
+notebook

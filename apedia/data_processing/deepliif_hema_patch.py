@@ -43,7 +43,7 @@ class MakeHemaPatch:
         if path_network_weights is None:
             # Construct the path to the weights directory relative to this file
             current_dir = os.path.dirname(__file__)
-            path_network_weights = os.path.join(current_dir, '..', '..', 'weights', 'deepliif_latest_net_G1.pth')
+            path_network_weights = os.path.join(current_dir, '..', 'utils', 'weights', 'deepliif_latest_net_G1.pth')
             
             # Check if weights exist locally
             if not os.path.exists(path_network_weights):

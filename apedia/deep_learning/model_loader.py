@@ -46,7 +46,7 @@ def download_file_from_url(url, destination_path):
 def get_tp_pred_model():
     # Define the path where the weights should be
     current_dir = os.path.dirname(__file__)
-    path_network_weights = os.path.join(current_dir, '..', '..', 'weights', 'tp_pred_model_checkpoint.pth')
+    path_network_weights = os.path.join(current_dir, '..', 'utils', 'weights', 'tp_pred_model_checkpoint.pth')
     
     # Check if weights exist
     if not os.path.exists(path_network_weights):
@@ -74,7 +74,7 @@ def get_tp_pred_model():
 def get_seg_model():
     # Define the path where the segmentation model weights should be stored
     current_dir = os.path.dirname(__file__)
-    path_network_weights = os.path.join(current_dir, '..', '..', 'weights', 'seg_model_checkpoint.pth')
+    path_network_weights = os.path.join(current_dir, '..', 'utils', 'weights', 'seg_model_checkpoint.pth')
     
     # Check if weights exist locally
     if not os.path.exists(path_network_weights):
