@@ -63,8 +63,8 @@ def train_cell_type_detector(params):
     
     # Save results
     current_date_string = datetime.datetime.now().strftime('%d%b%y').lower()
-    output_dir = Path(params['output_dir']) / f'cell_type_detection_output_{current_date_string}'
-    output_dir.makedirs(parents=True, exist_ok=True)
+    output_dir = Path(params['output_dir']) / f'cell_type_detection_training_output_{current_date_string}'
+    output_dir.mkdir(parents=True, exist_ok=True)
     save_model(params['epochs'], model, 'NInputChanUnet', optimizer, criterion, output_dir, f"{current_date_string}_NInputChanUnet_cv_split{params['cv_split']}_epochs{params['epochs']}")
     with open(output_dir / 'loss_acc_dict.pkl', 'wb') as f:
         pickle.dump(loss_acc_dict, f)
@@ -127,7 +127,7 @@ def main():
     # for now, fixed df_path and output_dir
     params['df_path'] = "/home/fabian/projects/phd/APEDIA/data/example_df_segmentation.feather"
     # example, preprocessed via APEDIA:
-    params['df_path'] = '/home/fabian/projects/phd/APEDIA/data/example_df_segmentation_reduced.feather'
+    params['df_path'] = '/home/fabian/projects/phd/APEDIA/data/example_df_segmentation.feather'
     
     params['output_dir'] = '/home/fabian/projects/phd/APEDIA/data/outputs'
     params['epochs'] = 2
