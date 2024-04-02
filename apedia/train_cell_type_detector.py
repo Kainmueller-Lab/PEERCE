@@ -60,18 +60,21 @@ def train_cell_type_detector(params):
         print(f"Epoch {epoch+1} of {params['epochs']}")
         loss_acc_dict = train_unet_cell_segmentation(model, train_loader, valid_loader, optimizer, criterion, loss_acc_dict=loss_acc_dict, disable_tqdm=params['disable_tqdm'])
         scheduler.step()
-
+    
+    # Save results
+    current_date_string = datetime.datetime.now().strftime('%d%b%y').lower()
+    output_dir = Path(params['output_dir']) / f'cell_type_detection_output_{current_date_string}'
+    output_dir.makedirs(parents=True, exist_ok=True)
+    save_model(params['epochs'], model, 'NInputChanUnet', optimizer, criterion, output_dir, f"{current_date_string}_NInputChanUnet_cv_split{params['cv_split']}_epochs{params['epochs']}")
+    with open(output_dir / 'loss_acc_dict.pkl', 'wb') as f:
+        pickle.dump(loss_acc_dict, f)
+    
+    # further analyze the output
     if not params['do_not_analyze']:
-        current_date_string = datetime.datetime.now().strftime('%d%b%y').lower()
-        path_analysis_output = Path(params['output_dir']) / f'cell_type_detection_analysis_output_{current_date_string}'
+        path_analysis_output = output_dir / 'analysis_output'
         path_analysis_output.mkdir(parents=True, exist_ok=True)
         path_analysis_output_cv = path_analysis_output / f"cv_split_{params['cv_split']}"
         path_analysis_output_cv.mkdir(exist_ok=True)
-        
-        with open(path_analysis_output_cv / 'loss_acc_dict.pkl', 'wb') as f:
-            pickle.dump(loss_acc_dict, f)
-        
-        save_model(params['epochs'], model, 'NInputChanUnet', optimizer, criterion, path_analysis_output_cv, f"{current_date_string}_NInputChanUnet_cv_split{params['cv_split']}_epochs{params['epochs']}")
 
         for idx in tqdm(range(len(dset_val))):
             model.eval()

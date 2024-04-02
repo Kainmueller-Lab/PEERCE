@@ -30,7 +30,7 @@ def predict_tps_wsi(ometiff_path, output_folder, tp_pred_model=None, seg_model=N
     wsi_name = Path(ometiff_path).name
     wsi_name_id = wsi_name.split('.')[0]
     date_string = datetime.now().strftime("%d%b%y")
-    wsi_prediction_folder = Path(output_folder) / f"{wsi_name}_{date_string}"
+    wsi_prediction_folder = Path(output_folder) / f"{wsi_name_id}_{date_string}"
     wsi_prediction_folder.mkdir(parents=True, exist_ok=True)
     
     # Load the ometiff WSI, create the dataset
