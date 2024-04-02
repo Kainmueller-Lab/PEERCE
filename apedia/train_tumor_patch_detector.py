@@ -34,6 +34,11 @@ def train_tumor_patch_detector(train_tumor_patch_detector_params):
     output_dir = train_tumor_patch_detector_params['output_dir']
     output_dir = Path(output_dir)
     
+    date_str = datetime.datetime.now().strftime('%d%b%y').lower()
+    output_dir = output_dir / f"train_tumor_patch_detector_{date_str}"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    
     # Verify CUDA availability
     if not torch.cuda.is_available():
         print("CUDA is not available. Training on CPU is not supported.")
@@ -88,7 +93,6 @@ def train_tumor_patch_detector(train_tumor_patch_detector_params):
     passed_time = str(datetime.timedelta(seconds=round(end_time - start_time)))
     loss_acc_dict['passed_time'] = passed_time
     
-    output_dir.mkdir(exist_ok=True)
     save_model(epochs, model, f'unet_{encoder_name}', optimizer, criterion, output_dir, info)
     # Save plots if necessary
     pickle.dump(loss_acc_dict, open(output_dir / f'loss_acc_dict_{info}.pckl', 'wb'))
@@ -101,8 +105,8 @@ def main():
     parser = argparse.ArgumentParser(description='Train Tumor Patch Detector')
 
     # Mandatory parameters
-    parser.add_argument('--data_df_path', type=str, required=True, help='Path to the dataframe containing the dataset information')
-    parser.add_argument('--output_dir', type=str, required=True, help='Directory to save training outputs')
+    parser.add_argument('--data_df_path', type=str, required=False, help='Path to the dataframe containing the dataset information')
+    parser.add_argument('--output_dir', type=str, required=False, help='Directory to save training outputs')
 
     # Optional parameters with defaults from train_tumor_patch_detector_params
     parser.add_argument('--column_path_data', type=str, default=train_tumor_patch_detector_params['column_path_data'], help='Column name for data patches paths')
@@ -124,12 +128,12 @@ def main():
     train_tumor_patch_detector_params.update(vars(args))
     
     # # Temporarily update params for testing
-    # train_tumor_patch_detector_params['data_df_path'] = '/home/fabian/projects/phd/APEDIA/data/example_patch_df.feather'
-    # train_tumor_patch_detector_params['output_dir'] = '/home/fabian/projects/phd/APEDIA/data/outputs'
-    # train_tumor_patch_detector_params['epochs'] = 1
-    # train_tumor_patch_detector_params['column_path_data'] = 'path_patch_pdl1'
-    # train_tumor_patch_detector_params['column_path_mask'] = 'path_patch_mask'
-    # train_tumor_patch_detector_params['column_scalar_label'] = 'tumors'
+    train_tumor_patch_detector_params['data_df_path'] = '/home/fabian/projects/phd/APEDIA/data/example_patch_df.feather'
+    train_tumor_patch_detector_params['output_dir'] = '/home/fabian/projects/phd/APEDIA/data/outputs'
+    train_tumor_patch_detector_params['epochs'] = 1
+    train_tumor_patch_detector_params['column_path_data'] = 'path_patch_pdl1'
+    train_tumor_patch_detector_params['column_path_mask'] = 'path_patch_mask'
+    train_tumor_patch_detector_params['column_scalar_label'] = 'tumors'
     
     # Call the training function with updated parameters
     print("Training Tumor Patch Detector")
