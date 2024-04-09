@@ -2,8 +2,6 @@
 
 **APEDIA**, **A**ngiosarcoma **P**D-L1 **E**xpression **DIA**gnostics with Deep Learning, aims to enhance the decision quality of pathologists in the assessment of PD-L1 expression in angiosarcoma. Given a whole-slide image, it calculates the Tumor Proportion Score, which indicates the percentate of tumor cells which are PD-L1 positive.
 
-**Note**: This repository is currently under construction. More features and documentation will be added as the project progresses.
-
 ## Functionality in the Repository
 
 The APEDIA project includes a series of scripts designed to preprocess data, train models, and predict scores relevant to PD-L1 expression in angiosarcoma. Below is a brief overview of each script and its purpose.
