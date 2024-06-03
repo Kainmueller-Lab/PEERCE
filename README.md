@@ -1,10 +1,10 @@
-# **APEDIA**: **A**ngiosarcoma **P**D-L1 **E**xpression **DIA**gnostics with Deep Learning
+# **PEERCE**: **P**D-L1 **E**xpression **E**stimation for **R**are **C**ancer **E**ntities
 
-**APEDIA**, **A**ngiosarcoma **P**D-L1 **E**xpression **DIA**gnostics with Deep Learning, aims to enhance the decision quality of pathologists in the assessment of PD-L1 expression in angiosarcoma. Given a whole-slide image, it calculates the Tumor Proportion Score, which indicates the percentate of tumor cells which are PD-L1 positive.
+**PEERCE**, **P**D-L1 **E**xpression **E**stimation for **R**are **C**ancer **E**ntities, aims to enhance the decision quality of pathologists in the assessment of PD-L1 expression in rare cancer entities. Given a whole-slide image, it calculates the Tumor Proportion Score, which indicates the percentate of tumor cells which are PD-L1 positive.
 
 ## Functionality in the Repository
 
-The APEDIA project includes a series of scripts designed to preprocess data, train models, and predict scores relevant to PD-L1 expression in angiosarcoma. Below is a brief overview of each script and its purpose.
+The PEERCE project includes a series of scripts designed to preprocess data, train models, and predict scores relevant to PD-L1 expression in rare cancer entities. Below is a brief overview of each script and its purpose.
 
 ### Training Functionality
 
@@ -32,7 +32,7 @@ The APEDIA project includes a series of scripts designed to preprocess data, tra
 
 ### System Requirements
 
-APEDIA has been developed and tested on **Linux/Ubuntu 22.04 LTS**. While APEDIA is designed to be cross-platform, running on a similar environment ensures the best compatibility and performance. Users on other systems may experience differences in execution or functionality.
+PEERCE has been developed and tested on **Linux/Ubuntu 22.04 LTS**. While PEERCE is designed to be cross-platform, running on a similar environment ensures the best compatibility and performance. Users on other systems may experience differences in execution or functionality.
 
 #### Hardware Requirements
 
@@ -40,13 +40,13 @@ APEDIA has been developed and tested on **Linux/Ubuntu 22.04 LTS**. While APEDIA
 - **For Model Training**: A minimum of 12GB GPU memory is recommended. Note that the specific GPU memory requirements can vary depending on the model type and batch size used during the training process.  
 
 
-To set up APEDIA for development or usage, follow these steps:
+To set up PEERCE for development or usage, follow these steps:
 
 1. **Clone this Repository**
 
     ```sh
-    git clone https://github.com/Kainmueller-Lab/APEDIA
-    cd APEDIA
+    git clone https://github.com/Kainmueller-Lab/PEERCE
+    cd PEERCE
     ```
 
 2. **Create a new Python environment (Recommended)**  
@@ -56,7 +56,7 @@ It is recommended to create a new environment using Python 3.8 (tested) or highe
 
       ```sh
       conda env create -f environment.yml
-      conda activate apedia_env
+      conda activate peerce_env
       ```  
       If you prefer using pip to manage packages, you can install the dependencies from the `requirements.txt` file:
       ```sh
@@ -71,31 +71,31 @@ It is recommended to create a new environment using Python 3.8 (tested) or highe
 
 ## How to Use
 
-The functionality provided by APEDIA can be accessed in several ways, catering to different use cases and preferences.  
+The functionality provided by PEERCE can be accessed in several ways, catering to different use cases and preferences.  
 Below are the methods to run the function to predicting the Tumor Proportion Score (TPS) from whole-slide images (WSIs).
 
 1. **Script Execution**  
-   The scripts included in the APEDIA project, like `predict_tps_wsi.py`, can be run directly from the command line. This method is straightforward and allows for quick execution of tasks. For example:
+   The scripts included in the PEERCE project, like `predict_tps_wsi.py`, can be run directly from the command line. This method is straightforward and allows for quick execution of tasks. For example:
 
     ```sh
     python predict_tps_wsi.py --ometiff_path path/to/example.ome.tiff --output_folder path/to/output/folder/
     ```
 
 2. **CLI Command**  
-   APEDIA provides a Command Line Interface (CLI) to facilitate easy access to its functionalities. The CLI commands abstract the script executions and offer a user-friendly way to interact with APEDIA. To predict the TPS using the CLI:
+   PEERCE provides a Command Line Interface (CLI) to facilitate easy access to its functionalities. The CLI commands abstract the script executions and offer a user-friendly way to interact with PEERCE. To predict the TPS using the CLI:
 
     ```sh
-    apedia predict_tps_wsi --ometiff_path path/to/example.ome.tiff --output_folder path/to/output/folder/
+    peerce predict_tps_wsi --ometiff_path path/to/example.ome.tiff --output_folder path/to/output/folder/
     ```
 
 3. **Jupyter Notebook Tutorial**  
    For those who prefer an interactive approach or wish to understand the process in greater detail, the `predict_tps_wsi.ipynb` notebook offers a comprehensive guide. This notebook not only allows you to run the TPS prediction but also provides further information and context about the process. You can find this notebook in the `jupyter_notebook_tutorials` folder within the repository.
 
 4. **Importing as a Module**  
-   If you are developing a Python project and wish to integrate APEDIA's functionality directly, you can import the required functions into your Python scripts. For instance:
+   If you are developing a Python project and wish to integrate PEERCE's functionality directly, you can import the required functions into your Python scripts. For instance:
 
     ```python
-    from apedia.predict_tps_wsi import predict_tps_wsi
+    from peerce.predict_tps_wsi import predict_tps_wsi
 
     # Usage example
     predict_tps_wsi(ometiff_path='path/to/example.ome.tiff', output_folder='path/to/output/folder/')
@@ -104,4 +104,4 @@ Below are the methods to run the function to predicting the Tumor Proportion Sco
 
 ## License
 
-APEDIA is open-sourced under the MIT License. This license enables anyone to freely use, modify, and distribute the project, subject to the conditions outlined in the LICENSE file found in the repository.
+PEERCE is open-sourced under the MIT License. This license enables anyone to freely use, modify, and distribute the project, subject to the conditions outlined in the LICENSE file found in the repository.

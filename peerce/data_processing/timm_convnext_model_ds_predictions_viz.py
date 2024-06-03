@@ -1,8 +1,8 @@
 import torch
 from torch.utils.data import Dataset
 
-from apedia.data_processing.create_tumor_roi_for_aligned_he import get_ometiff_tissue_mask
-from apedia.data_processing.extract_and_visualize_patch_from_wsi import find_all_tissue_patch_locations, get_wsi_patch_ome
+from peerce.data_processing.create_tumor_roi_for_aligned_he import get_ometiff_tissue_mask
+from peerce.data_processing.extract_and_visualize_patch_from_wsi import find_all_tissue_patch_locations, get_wsi_patch_ome
 
 
 class WSIOmeDataset3channelSimple(Dataset):

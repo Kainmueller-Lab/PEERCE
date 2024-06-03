@@ -1,13 +1,13 @@
 import argparse
 import pickle
-from apedia.utils.params import train_tumor_patch_detector_params
-from apedia.train_tumor_patch_detector import train_tumor_patch_detector
-from apedia.utils.params import train_cell_type_detection_params
-from apedia.train_cell_type_detector import train_cell_type_detector
-from apedia.utils.params import preprocess_cell_type_data_params
-from apedia.preprocess_cell_type_data import preprocess_cell_type_data
-from apedia.predict_tps_wsi import predict_tps_wsi
-from apedia.utils.params import predict_tps_params
+from peerce.utils.params import train_tumor_patch_detector_params
+from peerce.train_tumor_patch_detector import train_tumor_patch_detector
+from peerce.utils.params import train_cell_type_detection_params
+from peerce.train_cell_type_detector import train_cell_type_detector
+from peerce.utils.params import preprocess_cell_type_data_params
+from peerce.preprocess_cell_type_data import preprocess_cell_type_data
+from peerce.predict_tps_wsi import predict_tps_wsi
+from peerce.utils.params import predict_tps_params
 
 
 def train_tumor_patch_detector_handler(args):
@@ -137,7 +137,7 @@ def setup_predict_tps_subparser(subparsers):
 
 
 def main():
-    parser = argparse.ArgumentParser(prog="apedia", description='APEDIA Project CLI')
+    parser = argparse.ArgumentParser(prog="peerce", description='Peerce Project CLI')
     subparsers = parser.add_subparsers(help='Available commands')
 
     # Setup for tumor patch detector subcommand

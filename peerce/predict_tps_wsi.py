@@ -3,13 +3,13 @@ from pathlib import Path
 from cellpose import models as cp_models
 import argparse
 
-from apedia.data_processing.deepliif_hema_patch import MakeHemaPatch
-from apedia.deep_learning.model_loader import get_seg_model, get_tp_pred_model
-from apedia.data_processing.timm_convnext_model_ds_predictions_viz import WSIOmeDataset3channelSimple
-from apedia.data_processing.wsi_patch_df_6channel_dataset import get_valid_transform_6chan_alb
-from apedia.utils.read_and_visualize_ome_tiff import OmeTiffFile
-from apedia.deep_learning.wsi_tps_prediction import TpsSegmentationDataset, identify_tumor_patches_wsi, predict_cell_types_wsi
-from apedia.utils.params import predict_tps_params
+from peerce.data_processing.deepliif_hema_patch import MakeHemaPatch
+from peerce.deep_learning.model_loader import get_seg_model, get_tp_pred_model
+from peerce.data_processing.timm_convnext_model_ds_predictions_viz import WSIOmeDataset3channelSimple
+from peerce.data_processing.wsi_patch_df_6channel_dataset import get_valid_transform_6chan_alb
+from peerce.utils.read_and_visualize_ome_tiff import OmeTiffFile
+from peerce.deep_learning.wsi_tps_prediction import TpsSegmentationDataset, identify_tumor_patches_wsi, predict_cell_types_wsi
+from peerce.utils.params import predict_tps_params
 
 
 def predict_tps_wsi(ometiff_path, output_folder, tp_pred_model=None, seg_model=None, cellpose_model=None):

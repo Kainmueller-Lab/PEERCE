@@ -20,8 +20,8 @@ from skimage import io
 from cellpose import utils
 
 
-from apedia.deep_learning.unet_functionality import NInputChanUnet
-from apedia.data_processing.wsi_patch_df_6channel_dataset import get_valid_transform_6chan_alb
+from peerce.deep_learning.unet_functionality import NInputChanUnet
+from peerce.data_processing.wsi_patch_df_6channel_dataset import get_valid_transform_6chan_alb
 
 
 def get_matching_model_path(df, model_paths, wsi_name):

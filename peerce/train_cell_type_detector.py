@@ -9,13 +9,13 @@ import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
 
-from apedia.deep_learning.unet_functionality import NInputChanUnet
-from apedia.data_processing.datasets import get_data_loaders
-from apedia.data_processing.wsi_patch_df_6channel_dataset import get_more_augmented_train_transform_6chan_alb, get_valid_transform_6chan_alb, get_more_augmented_alsoelastic_train_transform_6chan_alb
-from apedia.utils.params import train_cell_type_detection_params
-from apedia.deep_learning.dl_utils import save_model
-from apedia.utils.analyze_segmentation_output import plot_circles_and_roi_points, visualize_image_and_model_output
-from apedia.deep_learning.train_unet_cell_segmentation_and_valid import train_unet_cell_segmentation, SegmentationDfDataset
+from peerce.deep_learning.unet_functionality import NInputChanUnet
+from peerce.data_processing.datasets import get_data_loaders
+from peerce.data_processing.wsi_patch_df_6channel_dataset import get_more_augmented_train_transform_6chan_alb, get_valid_transform_6chan_alb, get_more_augmented_alsoelastic_train_transform_6chan_alb
+from peerce.utils.params import train_cell_type_detection_params
+from peerce.deep_learning.dl_utils import save_model
+from peerce.utils.analyze_segmentation_output import plot_circles_and_roi_points, visualize_image_and_model_output
+from peerce.deep_learning.train_unet_cell_segmentation_and_valid import train_unet_cell_segmentation, SegmentationDfDataset
 
 
 def train_cell_type_detector(params):

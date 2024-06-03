@@ -6,12 +6,12 @@ from pathlib import Path
 import pandas as pd
 from cellpose import models
 
-from apedia.data_processing.deepliif_hema_patch import MakeHemaPatch
-from apedia.data_processing.generate_segmentation_map import create_segmentation_df, create_unet_segmentation_array
-from apedia.data_processing.instance_segmentation import create_cellpose_instance_segmentations_add_rois
-from apedia.data_processing.roi_infos import print_roi_infos
+from peerce.data_processing.deepliif_hema_patch import MakeHemaPatch
+from peerce.data_processing.generate_segmentation_map import create_segmentation_df, create_unet_segmentation_array
+from peerce.data_processing.instance_segmentation import create_cellpose_instance_segmentations_add_rois
+from peerce.data_processing.roi_infos import print_roi_infos
 
-from apedia.utils.params import preprocess_cell_type_data_params
+from peerce.utils.params import preprocess_cell_type_data_params
 
 
 def preprocess_cell_type_data(output_dir, path_folder_patch_imgs, path_roi_csv,

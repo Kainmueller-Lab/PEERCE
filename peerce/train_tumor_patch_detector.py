@@ -6,13 +6,13 @@ from pathlib import Path
 import time
 import datetime
 import pickle
-from apedia.deep_learning.unet_functionality import NInputChanUnet, train_more_valid_unet
-from apedia.data_processing.wsi_patch_df_6channel_dataset import WSIPatchDfDataset6channel, get_more_augmented_train_transform_6chan_alb, get_valid_transform_6chan_alb
-from apedia.deep_learning.dl_utils import save_model
-from apedia.data_processing.datasets import get_data_loaders
+from peerce.deep_learning.unet_functionality import NInputChanUnet, train_more_valid_unet
+from peerce.data_processing.wsi_patch_df_6channel_dataset import WSIPatchDfDataset6channel, get_more_augmented_train_transform_6chan_alb, get_valid_transform_6chan_alb
+from peerce.deep_learning.dl_utils import save_model
+from peerce.data_processing.datasets import get_data_loaders
 
 import argparse
-from apedia.utils.params import train_tumor_patch_detector_params
+from peerce.utils.params import train_tumor_patch_detector_params
 
 
 def train_tumor_patch_detector(train_tumor_patch_detector_params):

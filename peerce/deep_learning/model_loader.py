@@ -4,7 +4,7 @@ import torch
 from tqdm import tqdm
 from tempfile import NamedTemporaryFile
 
-from apedia.deep_learning.unet_functionality import NInputChanUnet
+from peerce.deep_learning.unet_functionality import NInputChanUnet
 
 
 def download_file_from_url(url, destination_path):

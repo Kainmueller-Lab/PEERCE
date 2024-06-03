@@ -7,7 +7,7 @@ import cv2
 from PIL import Image, ImageDraw, ImageFont
 from scipy.special import softmax
 
-from apedia.deep_learning.train_unet_cell_segmentation_and_valid import calculate_accuracies_directly
+from peerce.deep_learning.train_unet_cell_segmentation_and_valid import calculate_accuracies_directly
 ####################################################################################################
 # mostly analysis functions to create dicts with information about cell masks and predictions
 

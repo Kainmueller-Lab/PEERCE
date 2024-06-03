@@ -8,7 +8,7 @@ from cellpose import utils as cp_utils
 from tqdm import tqdm
 import staintools
 
-from apedia.data_processing.segmentation_viz import display_segmentation_channels, plot_circles_and_roi_points
+from peerce.data_processing.segmentation_viz import display_segmentation_channels, plot_circles_and_roi_points
 
 
 

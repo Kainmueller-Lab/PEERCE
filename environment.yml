@@ -1,4 +1,4 @@
-name: apedia_env
+name: peerce_env
 channels:
   - conda-forge
   - defaults
